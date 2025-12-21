@@ -17,7 +17,7 @@ def exp_poss(home, away):
     
 def predict_score(home, away, home_court):
     exponent = 2.5
-    points_multiplier = 0.87
+    points_multiplier = 0.86
 
     home_scaled_off = (df.loc[df['Team'] == home, 'Offense'].iloc[0] / 100) ** exponent * exp_poss(home, away)
     away_scaled_off = (df.loc[df['Team'] == away, 'Offense'].iloc[0] / 100) ** exponent * exp_poss(home, away)
