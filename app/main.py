@@ -1,17 +1,27 @@
 # app/main.py
 
 from fastapi import FastAPI
+from pydantic import BaseModel
+from app.model import predict_score
+
 app = FastAPI()
+
+class PredictionInput(BaseModel):
+    home: str
+    away: str
+    home_court: bool
 
 @app.get("/")
 def root():
-    return {"status": "Basketball model live"}
+    return {"status": "ok"}
 
-from app.model import predict_score
-
-@app.get("/predict")
-def predict(home: str, away: str, home_court: bool):
-    return predict_score(home, away, home_court)
+@app.post("/predict")
+def predict(data: PredictionInput):
+    return predict_score(
+        data.home,
+        data.away,
+        data.home_court
+    )
 
 from fastapi.responses import HTMLResponse
 from fastapi import Request
