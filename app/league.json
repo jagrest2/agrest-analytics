@@ -1,0 +1,24 @@
+{
+    "conferences": [
+        {
+            "name": "Big Ten",
+            "teams": ["Illinois", "Indiana", "Northwestern", "Purdue"]
+        },
+        {
+            "name": "SEC",
+            "teams": ["Texas", "Georgia", "Alabama", "Kentucky"]
+        },
+        {
+            "name": "ACC",
+            "teams": ["Duke", "North Carolina", "Louisville", "Virginia"]
+        },
+        {
+            "name": "Big 12",
+            "teams": ["Kansas", "Iowa St", "Arizona", "Houston"]
+        },
+        {
+            "name": "Big East",
+            "teams": ["DePaul", "Marquette", "Creighton", "Butler"]
+        }
+    ]
+}
