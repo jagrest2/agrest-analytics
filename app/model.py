@@ -44,7 +44,7 @@ st.title("College Hoops Predictor")
 # --- DATA LOADING SECTION ---
 # Use your local CSV path that you've already saved
 path = r"C:\Users\Josh Agrest\Desktop\agrest_analytics\app\data\kp_1220.csv"
-df = pd.read_csv(path)
+df = pd.read_csv("kp_1220.csv")
 
 # Ensure the 'Team' column is clean (removing numbers/ranks KenPom sometimes adds)
 df['Team'] = df['Team'].str.replace(r'\d+', '', regex=True).str.strip()
