@@ -15,28 +15,36 @@ df_poss = pd.read_csv("data/POSS_Data_V1.csv")
 all_dfs = [df_orb, df_efg, df_tov, df_opp, df_poss]
 
 for d in all_dfs:
-    # 1. Force columns to lowercase
-    d.columns = d.columns.str.lower()
-    # 2. STRIP hidden spaces from column names (The "KeyError" Killer)
-    d.columns = d.columns.str.strip()
-    # 3. STRIP hidden spaces from the actual Team names inside the rows
+    d.columns = d.columns.str.lower().str.strip()
     d['team'] = d['team'].astype(str).str.strip()
+    
+    # NEW: Remove '%' from every cell in the dataframe and convert to numbers
+    for col in d.columns:
+        if col not in ['rank', 'team']:
+            # 1. Replace the % with nothing
+            # 2. Convert to numeric (turns "15.5" into 15.5)
+            d[col] = pd.to_numeric(d[col].astype(str).str.replace('%', ''), errors='coerce')
+
 
 def simulate_possession(offense_team, defense_team):
     # 1. Did a turnover happen?
     to_prob = (df_tov.loc[df_tov['team'] == offense_team, 'turnover'].iloc[0] + 
                df_opp.loc[df_opp['team'] == defense_team, 'turnover'].iloc[0]) / 2
+
+    to_prob = to_prob/100
                
     if np.random.random() < to_prob:
         return 0, "Turnover"
 
     # 2. If no turnover, they take a shot. Did it go in?
     efg = df_efg.loc[df_efg['team'] == offense_team, 'efg'].iloc[0]
+    efg = efg/100
     if np.random.random() < efg:
         return 2, "Made 2pt Basket" # Simplified for now
     
     # 3. If they missed, did they get the offensive board?
     or_rate = df_orb.loc[df_orb['team'] == offense_team, 'orb'].iloc[0]
+    or_rate = or_rate/100
     if np.random.random() < or_rate:
         points, desc = simulate_possession(offense_team, defense_team) # Recursive reset
         return points, f"Missed Shot -> Off Rebound -> {desc}"
