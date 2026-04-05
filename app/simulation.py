@@ -62,7 +62,7 @@ def run_full_game_pbp(team_h, team_a):
         
     return score_h, score_a, game_log
 
-team_list = sorted(df_poss['Team'].unique())
+team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 
