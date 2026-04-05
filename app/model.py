@@ -137,18 +137,20 @@ if st.button("🎲 Simulate Matchup"):
     st.write(f"**Predicted Winner:** {winner} by {margin}")
     st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
     
-    # 2. Update the Permanent Ledger WITH the winner
-    total_sims, w_min, w_max = update_count(team_home, team_away, winner)
+    # UPDATE DATABASE WITH MARGIN
+    total_sims, w_min, w_max, b_min, b_max = update_count(team_home, team_away, winner, margin)
     
-    # Figure out which DB win count maps to which team for the display
     t_min = sorted([team_home, team_away])[0]
-    wins_home = w_min if team_home == t_min else w_max
-    wins_away = w_max if team_home == t_min else w_min
+    wins_h, wins_a = (w_min, w_max) if team_home == t_min else (w_max, w_min)
+    blow_h, blow_a = (b_min, b_max) if team_home == t_min else (b_max, b_min)
     
-    # 3. Display the tracker and the H2H history
-    st.info(f"📈 This specific matchup has been simulated **{total_sims}** times by users.")
+    st.info(f"📈 Matchup simulated **{total_sims}** times.")
     
-    st.write("### 📊 Community H2H History")
+    st.write("### 📊 Community History")
     col1, col2 = st.columns(2)
-    col1.metric(f"{team_home} Total Wins", wins_home)
-    col2.metric(f"{team_away} Total Wins", wins_away)
+    with col1:
+        st.metric(f"{team_home} Total Wins", wins_h)
+        st.write(f"🔥 20+ Pt Blowouts: **{blow_h}**")
+    with col2:
+        st.metric(f"{team_away} Total Wins", wins_a)
+        st.write(f"🔥 20+ Pt Blowouts: **{blow_a}**")
