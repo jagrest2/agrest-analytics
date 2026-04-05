@@ -13,19 +13,19 @@ df_poss = pd.read_csv("app/data/POSS_Data_V1.csv")
 
 def simulate_possession(offense_team, defense_team):
     # 1. Did a turnover happen?
-    to_prob = (df_tov.loc[df_tov['Team'] == offense_team, 'TOV%'].iloc[0] + 
-               df_opp.loc[df_opp['Team'] == defense_team, 'TOV%'].iloc[0]) / 2
+    to_prob = (df_tov.loc[df_tov['Team'] == offense_team, 'tOV%'].iloc[0] + 
+               df_opp.loc[df_opp['Team'] == defense_team, 'tOV%'].iloc[0]) / 2
                
     if np.random.random() < to_prob:
         return 0, "Turnover"
 
     # 2. If no turnover, they take a shot. Did it go in?
-    efg = df_efg.loc[df_efg['Team'] == offense_team, 'EFG%'].iloc[0]
+    efg = df_efg.loc[df_efg['Team'] == offense_team, 'eFG%'].iloc[0]
     if np.random.random() < efg:
         return 2, "Made 2pt Basket" # Simplified for now
     
     # 3. If they missed, did they get the offensive board?
-    or_rate = df_orb.loc[df_orb['Team'] == offense_team, 'ORB%'].iloc[0]
+    or_rate = df_orb.loc[df_orb['Team'] == offense_team, 'oRB%'].iloc[0]
     if np.random.random() < or_rate:
         points, desc = simulate_possession(offense_team, defense_team) # Recursive reset
         return points, f"Missed Shot -> Off Rebound -> {desc}"
@@ -60,7 +60,7 @@ team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 
 if st.button("🎲 Simulate Matchup"):
-    score_home, score_away = run_full_game_pbp(team_home, team_away)
+    score_home, score_away, game_log = run_full_game_pbp(team_home, team_away)
     margin = abs(score_home - score_away)
     winner = team_home if score_home > score_away else team_away
     
