@@ -11,12 +11,16 @@ df_tov = pd.read_csv("app/data/TOV_Data_V1.csv")
 df_opp = pd.read_csv("app/data/OPP_Data_V1.csv")
 df_poss = pd.read_csv("app/data/POSS_Data_V1.csv")
 
-# Force all column names to lowercase so you don't have to worry about typos
-df_orb.columns = df_orb.columns.str.lower()
-df_efg.columns = df_efg.columns.str.lower()
-df_tov.columns = df_tov.columns.str.lower()
-df_opp.columns = df_opp.columns.str.lower()
-df_poss.columns = df_poss.columns.str.lower()
+# Create a list of all your dataframes to clean them all at once
+all_dfs = [df_orb, df_efg, df_tov, df_opp, df_poss]
+
+for d in all_dfs:
+    # 1. Force columns to lowercase
+    d.columns = d.columns.str.lower()
+    # 2. STRIP hidden spaces from column names (The "KeyError" Killer)
+    d.columns = d.columns.str.strip()
+    # 3. STRIP hidden spaces from the actual Team names inside the rows
+    d['team'] = d['team'].astype(str).str.strip()
 
 def simulate_possession(offense_team, defense_team):
     # 1. Did a turnover happen?
