@@ -106,11 +106,6 @@ team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 home_advantage = st.checkbox("Home Court Advantage?")
 
-# --- UI Checkboxes ---
-show_pbp = st.checkbox("View Play-by-Play Log")
-show_stats = st.checkbox("View Advanced Team Stats")
-
-
 if st.button("🎲 Simulate Matchup"):
     score_home, score_away = predict_score_simulated(team_home, team_away, home_advantage)
     margin = abs(score_home - score_away)
