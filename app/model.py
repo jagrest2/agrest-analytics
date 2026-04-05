@@ -60,6 +60,7 @@ def update_count(t1, t2, winner_name, margin):
     conn.close()
     return stats 
 
+
 # Run this once at the very start of your app
 init_db()
 
@@ -67,15 +68,29 @@ st.title("College Hoops Predictor")
 
 # --- DATA LOADING SECTION ---
 df = pd.read_csv("app/data/kp_1220.csv")
-df['Team'] = df['Team'].str.replace(r'\d+', '', regex=True).str.strip()
+# 1. Remove Numbers/Ranks
+df['Team'] = df['Team'].str.replace(r'\d+', '', regex=True)
+
+# 2. Remove Tournament Suffixes (NCAA, NIT, etc.)
+# This looks for these specific words and replaces them with nothing
+suffixes = ['NCAA', 'NIT', 'CBI', 'CIT']
+for s in suffixes:
+    df['Team'] = df['Team'].str.replace(s, '', case=False)
+
+# 3. Clean up any leftover double spaces or trailing spaces
+df['Team'] = df['Team'].str.strip()
+
+# 4. Final safety check: Cast to string
+df['Team'] = df['Team'].astype(str)
+
 df["Offense"] = pd.to_numeric(df["ORtg"], errors='coerce')
 df["Defense"] = pd.to_numeric(df["DRtg"], errors='coerce')
 df["Poss"] = pd.to_numeric(df["AdjT"], errors='coerce')
 
 # --- LOGIC FUNCTIONS ---
 def exp_poss(home, away):
-    home_p = df.loc[df['Team'] == home, 'Poss'].iloc[0]
-    away_p = df.loc[df['Team'] == away, 'Poss'].iloc[0]
+    home_p = df.loc[df['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
+    away_p = df.loc[df['Team'].str.contains(away, case=False, na=False), 'Poss'].iloc[0]
     return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
     
 def predict_score(home, away, home_court):
@@ -126,3 +141,14 @@ if st.button("🎲 Simulate Matchup"):
     with col2:
         st.metric(f"{team_away} Total Wins", wins_a)
         st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
+
+# --- ADVANCED EFFICIENCY UI ---
+if st.checkbox("Show Advanced Efficiency Profile"):
+    st.subheader(f"Projected Efficiency: {team_home} vs {team_away}")
+    
+    # Filter the DF for just these two teams
+    compare_df = df[df['Team'].isin([team_home, team_away])]
+    
+    # Select only the columns a coach would care about
+    stats_to_show = ['Team', 'Conf', 'NetRTG', 'ORrg', 'DRtg', 'AdjT']
+    st.table(compare_df[stats_to_show])
