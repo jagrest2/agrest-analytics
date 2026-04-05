@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import requests
 import streamlit as st
-
 import sqlite3
 
 def init_db():
@@ -17,24 +16,33 @@ def init_db():
     conn.commit()
     conn.close()
 
-def update_count(t1, t2):
+def update_count(t1, t2, winner_name):
     # Always sort so 'Kansas vs Duke' is the same as 'Duke vs Kansas'
-    t_min, t_max = sorted([t1, t2])
+    t_list = sorted([t1, t2])
+    t_min, t_max = t_list[0], t_list[1]
+    
+    # Figure out which column gets the win
+    win_col = "wins_min" if winner_name == t_min else "wins_max"
     
     conn = sqlite3.connect('matchup_tracker.db')
     c = conn.cursor()
-    # This 'UPSERT' logic: If exists, +1. If not, insert 1.
-    c.execute('''INSERT INTO counts (team_min, team_max, simulation_count) 
-                 VALUES (?, ?, 1)
-                 ON CONFLICT(team_min, team_max) 
-                 DO UPDATE SET simulation_count = simulation_count + 1''', (t_min, t_max))
+    
+    # This 'UPSERT' logic: Update both the total count AND the winner's count
+    query = f'''INSERT INTO counts (team_min, team_max, simulation_count, {win_col}) 
+                VALUES (?, ?, 1, 1)
+                ON CONFLICT(team_min, team_max) 
+                DO UPDATE SET 
+                    simulation_count = simulation_count + 1,
+                    {win_col} = {win_col} + 1'''
+                    
+    c.execute(query, (t_min, t_max))
     conn.commit()
     
-    # Get the new total to show the user
-    c.execute("SELECT simulation_count FROM counts WHERE team_min=? AND team_max=?", (t_min, t_max))
-    count = c.fetchone()[0]
+    # Get the new totals to show the user
+    c.execute("SELECT simulation_count, wins_min, wins_max FROM counts WHERE team_min=? AND team_max=?", (t_min, t_max))
+    stats = c.fetchone()
     conn.close()
-    return count
+    return stats # Returns (total, w_min, w_max)
 
 # Run this once at the very start of your app
 init_db()
@@ -120,27 +128,27 @@ team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 home_advantage = st.checkbox("Home Court Advantage?")
 
-# if st.button("Predict Score"):
-#     score_a, score_b = predict_score_simulated(team_a, team_b, home_advantage)
-    
-#     st.header(f"Final Score Prediction")
-#     st.subheader(f"{team_a}: {score_a}")
-#     st.subheader(f"{team_b}: {score_b}")
-    
-    
-
 if st.button("🎲 Simulate Matchup"):
     # 1. Run your simulation logic
     score_home, score_away = predict_score_simulated(team_home, team_away, home_advantage)
     margin = round(abs(score_home - score_away), 1)
     winner = team_home if score_home > score_away else team_away
+    
     st.write(f"**Predicted Winner:** {winner} by {margin}")
-    
-    # 2. Update the Permanent Ledger
-    total_sims = update_count(team_home, team_away)
-    
-    # 3. Display the result and the tracker
     st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
-
     
+    # 2. Update the Permanent Ledger WITH the winner
+    total_sims, w_min, w_max = update_count(team_home, team_away, winner)
+    
+    # Figure out which DB win count maps to which team for the display
+    t_min = sorted([team_home, team_away])[0]
+    wins_home = w_min if team_home == t_min else w_max
+    wins_away = w_max if team_home == t_min else w_min
+    
+    # 3. Display the tracker and the H2H history
     st.info(f"📈 This specific matchup has been simulated **{total_sims}** times by users.")
+    
+    st.write("### 📊 Community H2H History")
+    col1, col2 = st.columns(2)
+    col1.metric(f"{team_home} Total Wins", wins_home)
+    col2.metric(f"{team_away} Total Wins", wins_away)
