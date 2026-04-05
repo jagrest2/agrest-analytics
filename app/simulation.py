@@ -24,8 +24,8 @@ for d in all_dfs:
 
 def simulate_possession(offense_team, defense_team):
     # 1. Did a turnover happen?
-    to_prob = (df_tov.loc[df_tov['team'] == offense_team, 'tov'].iloc[0] + 
-               df_opp.loc[df_opp['team'] == defense_team, 'tov'].iloc[0]) / 2
+    to_prob = (df_tov.loc[df_tov['team'] == offense_team, 'turnover'].iloc[0] + 
+               df_opp.loc[df_opp['team'] == defense_team, 'turnover'].iloc[0]) / 2
                
     if np.random.random() < to_prob:
         return 0, "Turnover"

@@ -68,8 +68,6 @@ st.title("College Hoops Predictor")
 
 # --- DATA LOADING SECTION ---
 df = pd.read_csv("app/data/kp_1220.csv")
-df_opp = pd.read_csv("app/data/opp_stats.csv")
-
 
 df["Offense"] = pd.to_numeric(df["ORtg"], errors='coerce')
 df["Defense"] = pd.to_numeric(df["DRtg"], errors='coerce')
