@@ -16,13 +16,18 @@ def init_db():
     conn.commit()
     conn.close()
 
-def update_count(t1, t2, winner_name):
-    # Always sort so 'Kansas vs Duke' is the same as 'Duke vs Kansas'
+def update_count(t1, t2, winner_name, margin):
     t_list = sorted([t1, t2])
     t_min, t_max = t_list[0], t_list[1]
     
-    # Figure out which column gets the win
+    # Determine win column
     win_col = "wins_min" if winner_name == t_min else "wins_max"
+    
+    # Determine blowout column (if margin is 20 or more)
+    blowout_query = ""
+    if margin >= 20:
+        blowout_col = "blowouts_min" if winner_name == t_min else "blowouts_max"
+        blowout_query = f", {blowout_col} = {blowout_col} + 1"
     
     conn = sqlite3.connect('matchup_tracker.db')
     c = conn.cursor()
