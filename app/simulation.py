@@ -11,21 +11,28 @@ df_tov = pd.read_csv("app/data/TOV_Data_V1.csv")
 df_opp = pd.read_csv("app/data/OPP_Data_V1.csv")
 df_poss = pd.read_csv("app/data/POSS_Data_V1.csv")
 
+# Force all column names to lowercase so you don't have to worry about typos
+df_orb.columns = df_orb.columns.str.lower()
+df_efg.columns = df_efg.columns.str.lower()
+df_tov.columns = df_tov.columns.str.lower()
+df_opp.columns = df_opp.columns.str.lower()
+df_poss.columns = df_poss.columns.str.lower()
+
 def simulate_possession(offense_team, defense_team):
     # 1. Did a turnover happen?
-    to_prob = (df_tov.loc[df_tov['Team'] == offense_team, 'tOV%'].iloc[0] + 
-               df_opp.loc[df_opp['Team'] == defense_team, 'tOV%'].iloc[0]) / 2
+    to_prob = (df_tov.loc[df_tov['Team'] == offense_team, 'tov%'].iloc[0] + 
+               df_opp.loc[df_opp['Team'] == defense_team, 'tov%'].iloc[0]) / 2
                
     if np.random.random() < to_prob:
         return 0, "Turnover"
 
     # 2. If no turnover, they take a shot. Did it go in?
-    efg = df_efg.loc[df_efg['Team'] == offense_team, 'eFG%'].iloc[0]
+    efg = df_efg.loc[df_efg['Team'] == offense_team, 'efg%'].iloc[0]
     if np.random.random() < efg:
         return 2, "Made 2pt Basket" # Simplified for now
     
     # 3. If they missed, did they get the offensive board?
-    or_rate = df_orb.loc[df_orb['Team'] == offense_team, 'oRB%'].iloc[0]
+    or_rate = df_orb.loc[df_orb['Team'] == offense_team, 'orb%'].iloc[0]
     if np.random.random() < or_rate:
         points, desc = simulate_possession(offense_team, defense_team) # Recursive reset
         return points, f"Missed Shot -> Off Rebound -> {desc}"
