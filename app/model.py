@@ -70,20 +70,15 @@ st.title("College Hoops Predictor")
 df = pd.read_csv("app/data/kp_1220.csv")
 df_stats = pd.read_csv("app/data/team_stats.csv")
 df_opp = pd.read_csv("app/data/opp_stats.csv")
-# 1. Remove Numbers/Ranks
-df['Team'] = df['Team'].str.replace(r'\d+', '', regex=True)
+
 
 # 2. Remove Tournament Suffixes (NCAA, NIT, etc.)
 # This looks for these specific words and replaces them with nothing
 suffixes = ['NCAA', 'NIT', 'CBI', 'CIT']
 for s in suffixes:
     df['Team'] = df['Team'].str.replace(s, '', case=False)
-
-# 3. Clean up any leftover double spaces or trailing spaces
-df['Team'] = df['Team'].str.strip()
-
-# 4. Final safety check: Cast to string
-df['Team'] = df['Team'].astype(str)
+    df_stats['Team'] = df_stats['Team'].str.replace(s, '', case=False)
+    df_opp['Team'] = df_opp['Team'].str.replace(s, '', case=False)
 
 df["Offense"] = pd.to_numeric(df["ORtg"], errors='coerce')
 df["Defense"] = pd.to_numeric(df["DRtg"], errors='coerce')
