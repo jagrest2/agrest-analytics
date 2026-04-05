@@ -7,18 +7,26 @@ import sqlite3
 def init_db():
     conn = sqlite3.connect('matchup_tracker.db')
     c = conn.cursor()
-    # Added blowout columns for both min and max teams
+    
+    # 1. Create the base table if it doesn't exist at all
     c.execute('''CREATE TABLE IF NOT EXISTS counts 
                  (team_min TEXT, team_max TEXT, 
                   simulation_count INTEGER,
                   wins_min INTEGER DEFAULT 0,
                   wins_max INTEGER DEFAULT 0,
-                  blowouts_min INTEGER DEFAULT 0,
-                  blowouts_max INTEGER DEFAULT 0,
                   PRIMARY KEY (team_min, team_max))''')
+                  
+    # 2. The "Migration": Safely try to add the new blowout columns to existing tables
+    try:
+        c.execute("ALTER TABLE counts ADD COLUMN blowouts_min INTEGER DEFAULT 0")
+        c.execute("ALTER TABLE counts ADD COLUMN blowouts_max INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        # If the columns already exist, SQLite throws an error. We just ignore it and move on!
+        pass
+        
     conn.commit()
     conn.close()
-
+    
 def update_count(t1, t2, winner_name, margin):
     t_list = sorted([t1, t2])
     t_min, t_max = t_list[0], t_list[1]
