@@ -26,7 +26,7 @@ def init_db():
         
     conn.commit()
     conn.close()
-    
+
 def update_count(t1, t2, winner_name, margin):
     t_list = sorted([t1, t2])
     t_min, t_max = t_list[0], t_list[1]
@@ -122,7 +122,7 @@ if st.button("🎲 Simulate Matchup"):
     col1, col2 = st.columns(2)
     with col1:
         st.metric(f"{team_home} Total Wins", wins_h)
-        st.write(f"🔥 20+ Pt Blowouts: **{blow_h}**")
+        st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
     with col2:
         st.metric(f"{team_away} Total Wins", wins_a)
-        st.write(f"🔥 20+ Pt Blowouts: **{blow_a}**")
+        st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
