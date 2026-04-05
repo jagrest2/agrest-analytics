@@ -32,13 +32,13 @@ def simulate_possession(offense_team, defense_team):
         
     return 0, "Missed Shot"
 
-def exp_poss(home, away):
-    home_p = df_poss.loc[df_poss['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
-    away_p = df_poss.loc[df_poss['Team'].str.contains(away, case=False, na=False), 'Poss'].iloc[0]
-    return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
+# def exp_poss(home, away):
+#     home_p = df_poss.loc[df_poss['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
+#     away_p = df_poss.loc[df_poss['Team'].str.contains(away, case=False, na=False), 'Poss'].iloc[0]
+#     return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
 
 def run_full_game_pbp(team_h, team_a):
-    total_poss = int(exp_poss(team_h, team_a))
+    total_poss = 70 ## we will figure this out int(exp_poss(team_h, team_a))
     game_log = []
     score_h, score_a = 0, 0
     
