@@ -5,11 +5,11 @@ import streamlit as st
 import sqlite3
 
 
-df_orb = pd.read_csv("data/ORB_Data_V1.csv")
-df_efg = pd.read_csv("data/EFG_Data_V1.csv")
-df_tov = pd.read_csv("data/TOV_Data_V1.csv")
-df_opp = pd.read_csv("data/OPP_Data_V1.csv")
-df_poss = pd.read_csv("data/POSS_Data_V1.csv")
+df_orb = pd.read_csv("app/data/ORB_Data_V1.csv")
+df_efg = pd.read_csv("app/data/EFG_Data_V1.csv")
+df_tov = pd.read_csv("app/data/TOV_Data_V1.csv")
+df_opp = pd.read_csv("app/data/OPP_Data_V1.csv")
+df_poss = pd.read_csv("app/data/POSS_Data_V1.csv")
 
 # Create a list of all your dataframes to clean them all at once
 all_dfs = [df_orb, df_efg, df_tov, df_opp, df_poss]
