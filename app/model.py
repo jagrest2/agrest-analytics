@@ -150,7 +150,7 @@ def run_full_game_pbp(team_h, team_a):
     return score_h, score_a, game_log
 
 df = df.dropna(subset=['Team'])
-df['Team'] = df['Team'].astype(str)
+#df['Team'] = df['Team'].astype(str)
 team_list = sorted(df['Team'].unique())
 
 team_home = st.selectbox("Select Home Team", team_list)
