@@ -1,23 +1,41 @@
+import pandas as pd
+import numpy as np
+import requests
+import streamlit as st
+import sqlite3
+
+
+df_orb = pd.read_csv("app/data/ORB_Data_V1.csv")
+df_efg = pd.read_csv("app/data/EFG_Data_V1.csv")
+df_tov = pd.read_csv("app/data/TOV_Data_V1.csv")
+df_opp = pd.read_csv("app/data/OPP_Data_V1.csv")
+df_poss = pd.read_csv("app/data/POSS_Data_V1.csv")
+
 def simulate_possession(offense_team, defense_team):
     # 1. Did a turnover happen?
-    to_prob = (df_stats.loc[df_stats['Team'] == offense_team, 'TOV%'].iloc[0] + 
+    to_prob = (df_tov.loc[df_tov['Team'] == offense_team, 'TOV%'].iloc[0] + 
                df_opp.loc[df_opp['Team'] == defense_team, 'TOV%'].iloc[0]) / 2
                
     if np.random.random() < to_prob:
         return 0, "Turnover"
 
     # 2. If no turnover, they take a shot. Did it go in?
-    efg = df_stats.loc[df_stats['Team'] == offense_team, 'eFG%'].iloc[0]
+    efg = df_efg.loc[df_efg['Team'] == offense_team, 'EFG%'].iloc[0]
     if np.random.random() < efg:
         return 2, "Made 2pt Basket" # Simplified for now
     
     # 3. If they missed, did they get the offensive board?
-    or_rate = df_opp.loc[df_opp['Team'] == offense_team, 'ORB%'].iloc[0]
+    or_rate = df_orb.loc[df_orb['Team'] == offense_team, 'ORB%'].iloc[0]
     if np.random.random() < or_rate:
         points, desc = simulate_possession(offense_team, defense_team) # Recursive reset
         return points, f"Missed Shot -> Off Rebound -> {desc}"
         
     return 0, "Missed Shot"
+
+def exp_poss(home, away):
+    home_p = df_poss.loc[df_poss['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
+    away_p = df_poss.loc[df_poss['Team'].str.contains(away, case=False, na=False), 'Poss'].iloc[0]
+    return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
 
 def run_full_game_pbp(team_h, team_a):
     total_poss = int(exp_poss(team_h, team_a))
@@ -36,3 +54,15 @@ def run_full_game_pbp(team_h, team_a):
         game_log.append(f"Away: {desc} | Score: {score_h}-{score_a}")
         
     return score_h, score_a, game_log
+
+team_list = sorted(df_poss['Team'].unique())
+team_home = st.selectbox("Select Home Team", team_list)
+team_away = st.selectbox("Select Away Team", team_list)
+
+if st.button("🎲 Simulate Matchup"):
+    score_home, score_away = run_full_game_pbp(team_home, team_away)
+    margin = abs(score_home - score_away)
+    winner = team_home if score_home > score_away else team_away
+    
+    st.write(f"**Predicted Winner:** {winner} by {margin}")
+    st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")

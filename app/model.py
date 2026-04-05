@@ -68,7 +68,6 @@ st.title("College Hoops Predictor")
 
 # --- DATA LOADING SECTION ---
 df = pd.read_csv("app/data/kp_1220.csv")
-df_orb = pd.read_csv("app/data/ORB_Data_V1.csv")
 df_opp = pd.read_csv("app/data/opp_stats.csv")
 
 
