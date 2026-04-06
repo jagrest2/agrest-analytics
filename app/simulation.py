@@ -195,7 +195,7 @@ def run_full_game_pbp(team_h, team_a):
             stats[team_a]["FGA"] += 1
             stats[team_h]["DRB"] += 1
             
-        score_h += max(0, pts)
+        score_a += max(0, pts)
         game_log.append(f"{desc} | Score: {score_h}-{score_a}")
 
     ot_count = 0
