@@ -85,43 +85,42 @@ for d in all_dfs:
             d[col] = pd.to_numeric(d[col].astype(str).str.replace('%', ''), errors='coerce')
 
 
-def simulate_possession(offense_team, defense_team):
-    # 1. Did a turnover happen?
-    to_prob = (df_tov.loc[df_tov['team'] == offense_team, 'turnover'].iloc[0] + 
-               df_opp.loc[df_opp['team'] == defense_team, 'turnover'].iloc[0]) / 2
-
-    to_prob = to_prob/100
+def simulate_possession(offense_name, defense_name):
+    # --- 1. Turnover Check ---
+    off_tov = df_tov.loc[df_tov['team'] == offense_name, 'turnover'].iloc[0]
+    def_tov = df_opp.loc[df_opp['team'] == defense_name, 'turnover'].iloc[0]
+    to_prob = (off_tov + def_tov) / 2
+    if to_prob > 1: to_prob /= 100
                
     if np.random.random() < to_prob:
-        return 0, "Turnover"
+        return 0, f"{offense_name} Turnover"
 
-    is_three = np.random.random() < 0.35
-    
-    # Get the eFG% and normalize it
-    efg = df_efg.loc[df_efg['team'] == offense_team, 'efg'].iloc[0]
+    # --- 2. Shot Selection ---
+    is_three = np.random.random() < 0.35 
+    efg = df_efg.loc[df_efg['team'] == offense_name, 'efg'].iloc[0]
     if efg > 1: efg /= 100
 
-    # --- 3. The "Make" Roll ---
+    # Determine shot outcome
+    shot_made = False
+    shot_type = "3PT" if is_three else "2PT"
+    
     if is_three:
-        # A 3pt make probability is lower because it's worth more points
-        # If eFG is 50%, the 3PT make prob should be ~33%
-        make_prob = efg / 1.5
-        if np.random.random() < make_prob:
-            return 3, f"{offense_team} MADE 3PT"
-        else:
-            return 0, f"{offense_team} Missed 3PT" # Now we can see missed 3s!
+        if np.random.random() < (efg / 1.5):
+            return 3, f"{offense_name} MADE 3PT"
     else:
-        # For a 2pt shot, eFG% is the same as raw FG%
-        make_prob = efg
-        if np.random.random() < make_prob:
-            return 2, f"{offense_team} MADE 2PT"
-        else:
-            return 0, f"{offense_team} Missed 2PT"
+        if np.random.random() < efg:
+            return 2, f"{offense_name} MADE 2PT"
 
-# def exp_poss(home, away):
-#     home_p = df_poss.loc[df_poss['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
-#     away_p = df_poss.loc[df_poss['Team'].str.contains(away, case=False, na=False), 'Poss'].iloc[0]
-#     return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
+    # --- 3. Rebound Check (ONLY reached if shot was missed) ---
+    or_rate = df_orb.loc[df_orb['team'] == offense_name, 'orb'].iloc[0]
+    if or_rate > 1: or_rate /= 100
+    
+    if np.random.random() < or_rate:
+        # We return -1 to signal a rebound, but include the shot type 
+        # so the Stat Ledger can record the miss correctly.
+        return -1, f"{offense_name} Missed {shot_type} -> Offensive Rebound"
+        
+    return 0, f"{offense_name} Missed {shot_type}"
 
 def run_full_game_pbp(team_h, team_a):
     total_poss = 70 
@@ -135,60 +134,57 @@ def run_full_game_pbp(team_h, team_a):
     
     score_h, score_a = 0, 0
 
-    def process_possession(off, deff, s_off, s_deff):
-        pts, desc = simulate_possession(off, deff)
-        
-        # 1. Record Initial Stats
-        if "Turnover" in desc:
-            stats[off]["TOV"] += 1
-        elif "3PT" in desc:
-            stats[off]["FGA"] += 1
-            stats[off]["3PA"] += 1
-            if "MADE" in desc:
-                stats[off]["FGM"] += 1
-                stats[off]["3PM"] += 1
-            elif "Rebound" not in desc: # It was a clean miss
-                stats[deff]["DRB"] += 1
-        elif "2PT" in desc or "Missed" in desc:
-            stats[off]["FGA"] += 1
-            if "MADE" in desc:
-                stats[off]["FGM"] += 1
-            elif "Rebound" not in desc:
-                stats[deff]["DRB"] += 1
+    
 
-        # 2. Handle Offensive Rebound "Reset"
-        if "Rebound" in desc:
-            stats[off]["ORB"] += 1
-            # Run the second shot attempt
-            pts_re, desc_re = simulate_possession(off, deff)
-            pts = max(0, pts_re)
-            desc = f"{off} REBOUND -> {desc_re}"
-            
-            # Record second shot stats
-            if "Turnover" in desc_re:
+        def process_possession(off, deff):
+            pts, desc = simulate_possession(off, deff)
+        
+            # 1. Record the Initial Attempt Stats
+            if "Turnover" in desc:
                 stats[off]["TOV"] += 1
-            else:
+            elif "3PT" in desc:
                 stats[off]["FGA"] += 1
-                if "3PT" in desc_re: stats[off]["3PA"] += 1
-                if "MADE" in desc_re:
+                stats[off]["3PA"] += 1
+                if "MADE" in desc:
                     stats[off]["FGM"] += 1
-                    if "3PT" in desc_re: stats[off]["3PM"] += 1
-                else:
-                    stats[deff]["DRB"] += 1 # 2nd miss always goes to defense here
-        
-        return max(0, pts), desc
-
-    # --- Regulation Loop ---
-    for p in range(total_poss):
-        # Home Turn
-        p_h, d_h = process_possession(team_h, team_a, score_h, score_a)
-        score_h += p_h
-        game_log.append(f"{d_h} | Score: {score_h}-{score_a}")
-        
-        # Away Turn
-        p_a, d_a = process_possession(team_a, team_h, score_a, score_h)
-        score_a += p_a
-        game_log.append(f"{d_a} | Score: {score_h}-{score_a}")
+                    stats[off]["3PM"] += 1
+            elif "2PT" in desc:
+                stats[off]["FGA"] += 1
+                if "MADE" in desc:
+                    stats[off]["FGM"] += 1
+            
+            # 2. Handle Rebound Logic
+            if "Rebound" in desc:
+                stats[off]["ORB"] += 1
+                # Run the second shot attempt (the 'putback')
+                pts_re, desc_re = simulate_possession(off, deff)
+                
+                # Record the second shot stats
+                if "Turnover" in desc_re:
+                    stats[off]["TOV"] += 1
+                elif "3PT" in desc_re:
+                    stats[off]["FGA"] += 1
+                    stats[off]["3PA"] += 1
+                    if "MADE" in desc_re:
+                        stats[off]["FGM"] += 1
+                        stats[off]["3PM"] += 1
+                    else:
+                        stats[deff]["DRB"] += 1
+                elif "2PT" in desc_re or "Missed" in desc_re:
+                    stats[off]["FGA"] += 1
+                    if "MADE" in desc_re:
+                        stats[off]["FGM"] += 1
+                    else:
+                        stats[deff]["DRB"] += 1
+                
+                # Combine the descriptions for the log
+                return max(0, pts_re), f"{desc} -> {desc_re}"
+                
+            # 3. If it was a clean miss with NO rebound, credit the defense
+            if "Missed" in desc and "Rebound" not in desc:
+                stats[deff]["DRB"] += 1
+                
+            return max(0, pts), desc
 
     # --- Overtime Loop ---
     ot_count = 0
