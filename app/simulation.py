@@ -248,7 +248,7 @@ sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
 
 # Only show the number input if we are in Batch mode
 if sim_mode == "Batch":
-    num_sims = st.sidebar.number_input(
+    num_sims = st.number_input(
         "Number of Simulations", 
         min_value=1, 
         max_value=5000, 
