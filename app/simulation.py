@@ -242,9 +242,9 @@ team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 
-# Sidebar UI
-st.sidebar.header("Simulation Settings")
-sim_mode = st.sidebar.radio("Simulation Mode", ["Single Game", "Batch"])
+st.title("College Hoops Simulator")
+st.header("Simulation Settings")
+sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
 
 # Only show the number input if we are in Batch mode
 if sim_mode == "Batch":
