@@ -122,31 +122,82 @@ def simulate_possession(offense_team, defense_team):
 #     return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
 
 def run_full_game_pbp(team_h, team_a):
-    total_poss = 70 ## we will figure this out int(exp_poss(team_h, team_a))
+    total_poss = 70 
     game_log = []
+    
+    # Initialize the "Stat Ledger"
+    stats = {
+        team_h: {"FGM": 0, "FGA": 0, "3PM": 0, "3PA": 0, "TOV": 0, "ORB": 0, "DRB": 0},
+        team_a: {"FGM": 0, "FGA": 0, "3PM": 0, "3PA": 0, "TOV": 0, "ORB": 0, "DRB": 0}
+    }
+    
     score_h, score_a = 0, 0
     
     for p in range(total_poss):
-        # --- Home Team Possession ---
+        # --- Home Possession ---
         pts, desc = simulate_possession(team_h, team_a)
-        if pts == -1: # Handling Rebound without recursion
-            new_pts, new_desc = simulate_possession(team_h, team_a)
-            pts = max(0, new_pts)
-            desc = f"{team_h} REBOUND -> {new_desc}"
         
+        if "Turnover" in desc:
+            stats[team_h]["TOV"] += 1
+        elif "MADE" in desc:
+            stats[team_h]["FGA"] += 1
+            stats[team_h]["FGM"] += 1
+            if "3PT" in desc:
+                stats[team_h]["3PA"] += 1
+                stats[team_h]["3PM"] += 1
+        elif "Rebound" in desc: # Offensive Rebound Case
+            stats[team_h]["FGA"] += 1 # Count the initial miss
+            stats[team_h]["ORB"] += 1
+            # Run the 'putback' or reset shot
+            pts_re, desc_re = simulate_possession(team_h, team_a)
+            pts = max(0, pts_re)
+            desc = f"{team_h} REBOUND -> {desc_re}"
+            # Handle the second shot stats
+            if "MADE" in desc_re:
+                stats[team_h]["FGA"] += 1
+                stats[team_h]["FGM"] += 1
+            elif "Missed" in desc_re:
+                stats[team_h]["FGA"] += 1
+                stats[team_a]["DRB"] += 1 # Rebound goes to defense on 2nd miss
+        else: # Standard Miss
+            stats[team_h]["FGA"] += 1
+            stats[team_a]["DRB"] += 1
+            
         score_h += max(0, pts)
         game_log.append(f"{desc} | Score: {score_h}-{score_a}")
+
+        # --- Away Possession ---
+        pts, desc = simulate_possession(team_h, team_a)
         
-        # --- Away Team Possession ---
-        pts, desc = simulate_possession(team_a, team_h)
-        if pts == -1:
-            new_pts, new_desc = simulate_possession(team_a, team_h)
-            pts = max(0, new_pts)
-            desc = f"{team_a} REBOUND -> {new_desc}"
+        if "Turnover" in desc:
+            stats[team_a]["TOV"] += 1
+        elif "MADE" in desc:
+            stats[team_a]["FGA"] += 1
+            stats[team_a]["FGM"] += 1
+            if "3PT" in desc:
+                stats[team_a]["3PA"] += 1
+                stats[team_a]["3PM"] += 1
+        elif "Rebound" in desc: # Offensive Rebound Case
+            stats[team_a]["FGA"] += 1 # Count the initial miss
+            stats[team_a]["ORB"] += 1
+            # Run the 'putback' or reset shot
+            pts_re, desc_re = simulate_possession(team_h, team_a)
+            pts = max(0, pts_re)
+            desc = f"{team_a} REBOUND -> {desc_re}"
+            # Handle the second shot stats
+            if "MADE" in desc_re:
+                stats[team_a]["FGA"] += 1
+                stats[team_a]["FGM"] += 1
+            elif "Missed" in desc_re:
+                stats[team_a]["FGA"] += 1
+                stats[team_h]["DRB"] += 1 # Rebound goes to defense on 2nd miss
+        else: # Standard Miss
+            stats[team_a]["FGA"] += 1
+            stats[team_h]["DRB"] += 1
             
-        score_a += max(0, pts)
+        score_h += max(0, pts)
         game_log.append(f"{desc} | Score: {score_h}-{score_a}")
-    
+
     ot_count = 0
     while score_h == score_a:
         ot_count += 1
@@ -169,10 +220,11 @@ def run_full_game_pbp(team_h, team_a):
 team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
+show_stats = st.checkbox("📊 Show Team Box Scores")
 show_log = st.checkbox("📜 Show Play-by-Play Log")
 
 if st.button("🎲 Simulate Matchup"):
-    score_home, score_away, game_log = run_full_game_pbp(team_home, team_away)
+    score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
     margin = abs(score_home - score_away)
     winner = team_home if score_home > score_away else team_away
     
@@ -193,9 +245,15 @@ if st.button("🎲 Simulate Matchup"):
     with col1:
         st.metric(f"{team_home} Total Wins", wins_h)
         st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
+        if st.checkbox("📊 Show Team Box Scores"):
+            home_stats_df = pd.DataFrame(stats[team_home], index=["Stats"]).T
+            st.table(home_stats_df)
     with col2:
         st.metric(f"{team_away} Total Wins", wins_a)
         st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
+        if st.checkbox("📊 Show Team Box Scores"):
+            away_stats_df = pd.DataFrame(stats[team_away], index=["Stats"]).T
+            st.table(away_stats_df)
 
     if show_log:
         with st.expander("View Full Game Transcript", expanded=True):
