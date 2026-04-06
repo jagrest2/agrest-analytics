@@ -239,10 +239,10 @@ def run_monte_carlo(team_h, team_a, iterations):
     return win_pct_h, avg_margin
 
 team_list = sorted(df_orb['team'].unique())
+st.title("College Hoops Simulator")
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 
-st.title("College Hoops Simulator")
 st.header("Simulation Settings")
 sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
 
