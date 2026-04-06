@@ -139,7 +139,7 @@ def run_full_game_pbp(team_h, team_a):
     def process_possession(off, deff):
         pts, desc = simulate_possession(off, deff)
         
-            # 1. Record the Initial Attempt Stats
+        # 1. Record the Initial Attempt Stats
         if "Turnover" in desc:
             stats[off]["TOV"] += 1
         elif "3PT" in desc:
@@ -185,20 +185,27 @@ def run_full_game_pbp(team_h, team_a):
             stats[deff]["DRB"] += 1
                 
         return max(0, pts), desc
+    
+    for p in range(total_poss):
+        # Home Turn
+        p_h, d_h = process_possession(team_h, team_a)
+        score_h += p_h
+        game_log.append(f"{d_h} | Score: {score_h}-{score_a}")
+        
+        # Away Turn
+        p_a, d_a = process_possession(team_a, team_h)
+        score_a += p_a
+        game_log.append(f"{d_a} | Score: {score_h}-{score_a}")
 
     # --- Overtime Loop ---
-    # ot_count = 0
-    # while score_h == score_a:
-    #     ot_count += 1
-    #     game_log.append(f"--- START OF OVERTIME {ot_count} ---")
-    #     for p in range(10): # 5 mins = ~10 possessions
-    #         p_h, d_h = process_possession(team_h, team_a)
-    #         score_h += p_h
-    #         game_log.append(f"OT{ot_count} {d_h} | Score: {score_h}-{score_a}")
-            
-    #         p_a, d_a = process_possession(team_a, team_h)
-    #         score_a += p_a
-    #         game_log.append(f"OT{ot_count} {d_a} | Score: {score_h}-{score_a}")
+    ot_count = 0
+    while score_h == score_a:
+        ot_count += 1
+        game_log.append(f"--- START OF OVERTIME {ot_count} ---")
+        for p in range(10): # 5 mins = ~10 possessions
+            p_h, d_h = process_possession(team_h, team_a)
+            score_h += p_h
+            game_log.append(f"OT{ot_count} {d_h} | Score: {score_h}-{score_a}")
 
     return score_h, score_a, game_log, stats
 
