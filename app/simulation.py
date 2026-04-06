@@ -136,55 +136,55 @@ def run_full_game_pbp(team_h, team_a):
 
     
 
-        def process_possession(off, deff):
-            pts, desc = simulate_possession(off, deff)
+    def process_possession(off, deff):
+        pts, desc = simulate_possession(off, deff)
         
             # 1. Record the Initial Attempt Stats
-            if "Turnover" in desc:
+        if "Turnover" in desc:
+            stats[off]["TOV"] += 1
+        elif "3PT" in desc:
+            stats[off]["FGA"] += 1
+            stats[off]["3PA"] += 1
+            if "MADE" in desc:
+                stats[off]["FGM"] += 1
+                stats[off]["3PM"] += 1
+        elif "2PT" in desc:
+            stats[off]["FGA"] += 1
+            if "MADE" in desc:
+                stats[off]["FGM"] += 1
+            
+        # 2. Handle Rebound Logic
+        if "Rebound" in desc:
+            stats[off]["ORB"] += 1
+            # Run the second shot attempt (the 'putback')
+            pts_re, desc_re = simulate_possession(off, deff)
+                
+            # Record the second shot stats
+            if "Turnover" in desc_re:
                 stats[off]["TOV"] += 1
-            elif "3PT" in desc:
+            elif "3PT" in desc_re:
                 stats[off]["FGA"] += 1
                 stats[off]["3PA"] += 1
-                if "MADE" in desc:
+                if "MADE" in desc_re:
                     stats[off]["FGM"] += 1
                     stats[off]["3PM"] += 1
-            elif "2PT" in desc:
+                else:
+                    stats[deff]["DRB"] += 1
+            elif "2PT" in desc_re or "Missed" in desc_re:
                 stats[off]["FGA"] += 1
-                if "MADE" in desc:
+                if "MADE" in desc_re:
                     stats[off]["FGM"] += 1
-            
-            # 2. Handle Rebound Logic
-            if "Rebound" in desc:
-                stats[off]["ORB"] += 1
-                # Run the second shot attempt (the 'putback')
-                pts_re, desc_re = simulate_possession(off, deff)
-                
-                # Record the second shot stats
-                if "Turnover" in desc_re:
-                    stats[off]["TOV"] += 1
-                elif "3PT" in desc_re:
-                    stats[off]["FGA"] += 1
-                    stats[off]["3PA"] += 1
-                    if "MADE" in desc_re:
-                        stats[off]["FGM"] += 1
-                        stats[off]["3PM"] += 1
-                    else:
-                        stats[deff]["DRB"] += 1
-                elif "2PT" in desc_re or "Missed" in desc_re:
-                    stats[off]["FGA"] += 1
-                    if "MADE" in desc_re:
-                        stats[off]["FGM"] += 1
-                    else:
-                        stats[deff]["DRB"] += 1
+                else:
+                    stats[deff]["DRB"] += 1
                 
                 # Combine the descriptions for the log
-                return max(0, pts_re), f"{desc} -> {desc_re}"
+            return max(0, pts_re), f"{desc} -> {desc_re}"
                 
             # 3. If it was a clean miss with NO rebound, credit the defense
-            if "Missed" in desc and "Rebound" not in desc:
-                stats[deff]["DRB"] += 1
+        if "Missed" in desc and "Rebound" not in desc:
+            stats[deff]["DRB"] += 1
                 
-            return max(0, pts), desc
+        return max(0, pts), desc
 
     # --- Overtime Loop ---
     ot_count = 0
