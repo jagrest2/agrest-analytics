@@ -136,6 +136,7 @@ def run_full_game_pbp(team_h, team_a):
 team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
+show_log = st.checkbox("📜 Show Play-by-Play Log")
 
 if st.button("🎲 Simulate Matchup"):
     score_home, score_away, game_log = run_full_game_pbp(team_home, team_away)
@@ -162,4 +163,14 @@ if st.button("🎲 Simulate Matchup"):
     with col2:
         st.metric(f"{team_away} Total Wins", wins_a)
         st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
+
+    if show_log:
+        with st.expander("View Full Game Transcript", expanded=True):
+            # Using a loop to print each line of the log
+            for line in game_log:
+                # Add a little styling to make the scores stand out
+                if "Score:" in line:
+                    st.write(line.replace("|", "—"))
+                else:
+                    st.write(line)
 
