@@ -245,10 +245,10 @@ team_away = st.selectbox("Select Away Team", team_list)
 
 # Sidebar or Main UI
 sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch (1,000 Games)"])
+show_stats = st.checkbox("Show Team Box Scores (Single Game Only)")
+show_log = st.checkbox("Show Play-by-Play Log (Single Game Only)")
 
 if st.button("🎲 Run Simulation"):
-    show_stats = st.checkbox("Show Team Box Scores")
-    show_log = st.checkbox("Show Play-by-Play Log")
     if sim_mode == "Single Game":
         score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
         margin = abs(score_home - score_away)
