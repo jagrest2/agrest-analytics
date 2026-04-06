@@ -220,8 +220,8 @@ def run_full_game_pbp(team_h, team_a):
 team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
-show_stats = st.checkbox("📊 Show Team Box Scores")
-show_log = st.checkbox("📜 Show Play-by-Play Log")
+show_stats = st.checkbox("Show Team Box Scores")
+show_log = st.checkbox("Show Play-by-Play Log")
 
 if st.button("🎲 Simulate Matchup"):
     score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
@@ -245,13 +245,13 @@ if st.button("🎲 Simulate Matchup"):
     with col1:
         st.metric(f"{team_home} Total Wins", wins_h)
         st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
-        if st.checkbox("📊 Show Team Box Scores"):
+        if show_stats == True:
             home_stats_df = pd.DataFrame(stats[team_home], index=["Stats"]).T
             st.table(home_stats_df)
     with col2:
         st.metric(f"{team_away} Total Wins", wins_a)
         st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
-        if st.checkbox("📊 Show Team Box Scores"):
+        if show_stats == True:
             away_stats_df = pd.DataFrame(stats[team_away], index=["Stats"]).T
             st.table(away_stats_df)
 
