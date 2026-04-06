@@ -192,11 +192,11 @@ def run_full_game_pbp(team_h, team_a):
         ot_count += 1
         game_log.append(f"--- START OF OVERTIME {ot_count} ---")
         for p in range(10): # 5 mins = ~10 possessions
-            p_h, d_h = process_possession(team_h, team_a, score_h, score_a)
+            p_h, d_h = process_possession(team_h, team_a)
             score_h += p_h
             game_log.append(f"OT{ot_count} {d_h} | Score: {score_h}-{score_a}")
             
-            p_a, d_a = process_possession(team_a, team_h, score_a, score_h)
+            p_a, d_a = process_possession(team_a, team_h)
             score_a += p_a
             game_log.append(f"OT{ot_count} {d_a} | Score: {score_h}-{score_a}")
 
