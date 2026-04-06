@@ -218,7 +218,7 @@ def run_monte_carlo(team_h, team_a, iterations):
     
     for i in range(iterations):
         # Pass True for fast_mode so we skip the strings
-        s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a, fast_mode=True)
+        s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a)
         
         if s_h > s_a:
             wins_h += 1
