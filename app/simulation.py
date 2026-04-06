@@ -254,37 +254,38 @@ if sim_mode == "Batch":
     value=1000, 
     step=100,
     help="Maximum allowed is 2,000 simulations per click."
+
+    
+    def run_monte_carlo(team_h, team_a, iterations=num_sims):
+        wins_h = 0
+        wins_a = 0
+        total_margin = 0
+        
+        # We use a progress bar because 1,000 sims can take a second
+        progress_bar = st.progress(0)
+        
+        for i in range(iterations):
+            # We only need the scores, we can ignore the log and stats for speed
+            s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a)
+            
+            if s_h > s_a:
+                wins_h += 1
+            elif s_a > s_h:
+                wins_a += 1
+                
+            total_margin += (s_h - s_a)
+            
+            # Update progress bar every 10 sims
+            if i % 10 == 0:
+                progress_bar.progress(i / iterations)
+                
+        progress_bar.empty() # Remove bar when done
+        
+        win_pct_h = (wins_h / iterations) * 100
+        avg_margin = total_margin / iterations
+        
+        return win_pct_h, avg_margin
 )
-    
-def run_monte_carlo(team_h, team_a, iterations=num_sims):
-    wins_h = 0
-    wins_a = 0
-    total_margin = 0
-    
-    # We use a progress bar because 1,000 sims can take a second
-    progress_bar = st.progress(0)
-    
-    for i in range(iterations):
-        # We only need the scores, we can ignore the log and stats for speed
-        s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a)
-        
-        if s_h > s_a:
-            wins_h += 1
-        elif s_a > s_h:
-            wins_a += 1
-            
-        total_margin += (s_h - s_a)
-        
-        # Update progress bar every 10 sims
-        if i % 10 == 0:
-            progress_bar.progress(i / iterations)
-            
-    progress_bar.empty() # Remove bar when done
-    
-    win_pct_h = (wins_h / iterations) * 100
-    avg_margin = total_margin / iterations
-    
-    return win_pct_h, avg_margin
     
 show_stats = st.checkbox("Show Team Box Scores (Single Game Only)")
 show_log = st.checkbox("Show Play-by-Play Log (Single Game Only)")
