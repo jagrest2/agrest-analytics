@@ -127,96 +127,83 @@ def run_full_game_pbp(team_h, team_a):
     total_poss = 70 
     game_log = []
     
-    # Initialize the "Stat Ledger"
+    # Initialize the Stat Ledger
     stats = {
         team_h: {"FGM": 0, "FGA": 0, "3PM": 0, "3PA": 0, "TOV": 0, "ORB": 0, "DRB": 0},
         team_a: {"FGM": 0, "FGA": 0, "3PM": 0, "3PA": 0, "TOV": 0, "ORB": 0, "DRB": 0}
     }
     
     score_h, score_a = 0, 0
-    
+
+    def process_possession(off, deff, s_off, s_deff):
+        pts, desc = simulate_possession(off, deff)
+        
+        # 1. Record Initial Stats
+        if "Turnover" in desc:
+            stats[off]["TOV"] += 1
+        elif "3PT" in desc:
+            stats[off]["FGA"] += 1
+            stats[off]["3PA"] += 1
+            if "MADE" in desc:
+                stats[off]["FGM"] += 1
+                stats[off]["3PM"] += 1
+            elif "Rebound" not in desc: # It was a clean miss
+                stats[deff]["DRB"] += 1
+        elif "2PT" in desc or "Missed" in desc:
+            stats[off]["FGA"] += 1
+            if "MADE" in desc:
+                stats[off]["FGM"] += 1
+            elif "Rebound" not in desc:
+                stats[deff]["DRB"] += 1
+
+        # 2. Handle Offensive Rebound "Reset"
+        if "Rebound" in desc:
+            stats[off]["ORB"] += 1
+            # Run the second shot attempt
+            pts_re, desc_re = simulate_possession(off, deff)
+            pts = max(0, pts_re)
+            desc = f"{off} REBOUND -> {desc_re}"
+            
+            # Record second shot stats
+            if "Turnover" in desc_re:
+                stats[off]["TOV"] += 1
+            else:
+                stats[off]["FGA"] += 1
+                if "3PT" in desc_re: stats[off]["3PA"] += 1
+                if "MADE" in desc_re:
+                    stats[off]["FGM"] += 1
+                    if "3PT" in desc_re: stats[off]["3PM"] += 1
+                else:
+                    stats[deff]["DRB"] += 1 # 2nd miss always goes to defense here
+        
+        return max(0, pts), desc
+
+    # --- Regulation Loop ---
     for p in range(total_poss):
-        # --- Home Possession ---
-        pts, desc = simulate_possession(team_h, team_a)
+        # Home Turn
+        p_h, d_h = process_possession(team_h, team_a, score_h, score_a)
+        score_h += p_h
+        game_log.append(f"{d_h} | Score: {score_h}-{score_a}")
         
-        if "Turnover" in desc:
-            stats[team_h]["TOV"] += 1
-        elif "MADE" in desc:
-            stats[team_h]["FGA"] += 1
-            stats[team_h]["FGM"] += 1
-            if "3PT" in desc:
-                stats[team_h]["3PA"] += 1
-                stats[team_h]["3PM"] += 1
-        elif "Rebound" in desc: # Offensive Rebound Case
-            stats[team_h]["FGA"] += 1 # Count the initial miss
-            stats[team_h]["ORB"] += 1
-            # Run the 'putback' or reset shot
-            pts_re, desc_re = simulate_possession(team_h, team_a)
-            pts = max(0, pts_re)
-            desc = f"{team_h} REBOUND -> {desc_re}"
-            # Handle the second shot stats
-            if "MADE" in desc_re:
-                stats[team_h]["FGA"] += 1
-                stats[team_h]["FGM"] += 1
-            elif "Missed" in desc_re:
-                stats[team_h]["FGA"] += 1
-                stats[team_a]["DRB"] += 1 # Rebound goes to defense on 2nd miss
-        else: # Standard Miss
-            stats[team_h]["FGA"] += 1
-            stats[team_a]["DRB"] += 1
-            
-        score_h += max(0, pts)
-        game_log.append(f"{desc} | Score: {score_h}-{score_a}")
+        # Away Turn
+        p_a, d_a = process_possession(team_a, team_h, score_a, score_h)
+        score_a += p_a
+        game_log.append(f"{d_a} | Score: {score_h}-{score_a}")
 
-        # --- Away Possession ---
-        pts, desc = simulate_possession(team_h, team_a)
-        
-        if "Turnover" in desc:
-            stats[team_a]["TOV"] += 1
-        elif "MADE" in desc:
-            stats[team_a]["FGA"] += 1
-            stats[team_a]["FGM"] += 1
-            if "3PT" in desc:
-                stats[team_a]["3PA"] += 1
-                stats[team_a]["3PM"] += 1
-        elif "Rebound" in desc: # Offensive Rebound Case
-            stats[team_a]["FGA"] += 1 # Count the initial miss
-            stats[team_a]["ORB"] += 1
-            # Run the 'putback' or reset shot
-            pts_re, desc_re = simulate_possession(team_h, team_a)
-            pts = max(0, pts_re)
-            desc = f"{team_a} REBOUND -> {desc_re}"
-            # Handle the second shot stats
-            if "MADE" in desc_re:
-                stats[team_a]["FGA"] += 1
-                stats[team_a]["FGM"] += 1
-            elif "Missed" in desc_re:
-                stats[team_a]["FGA"] += 1
-                stats[team_h]["DRB"] += 1 # Rebound goes to defense on 2nd miss
-        else: # Standard Miss
-            stats[team_a]["FGA"] += 1
-            stats[team_h]["DRB"] += 1
-            
-        score_a += max(0, pts)
-        game_log.append(f"{desc} | Score: {score_h}-{score_a}")
-
+    # --- Overtime Loop ---
     ot_count = 0
     while score_h == score_a:
         ot_count += 1
         game_log.append(f"--- START OF OVERTIME {ot_count} ---")
-        
-        # 5 minutes of OT is roughly 1/8th of a game (~8-10 possessions)
-        ot_possessions = 10 
-        
-        for p in range(ot_possessions):
-            pts, desc = simulate_possession(team_h, team_a)
-            score_h += pts
-            game_log.append(f"OT{ot_count} Home: {desc} | Score: {score_h}-{score_a}")
+        for p in range(10): # 5 mins = ~10 possessions
+            p_h, d_h = process_possession(team_h, team_a, score_h, score_a)
+            score_h += p_h
+            game_log.append(f"OT{ot_count} {d_h} | Score: {score_h}-{score_a}")
             
-            pts, desc = simulate_possession(team_a, team_h)
-            score_a += pts
-            game_log.append(f"OT{ot_count} Away: {desc} | Score: {score_h}-{score_a}")
-        
+            p_a, d_a = process_possession(team_a, team_h, score_a, score_h)
+            score_a += p_a
+            game_log.append(f"OT{ot_count} {d_a} | Score: {score_h}-{score_a}")
+
     return score_h, score_a, game_log, stats
 
 team_list = sorted(df_orb['team'].unique())
