@@ -215,7 +215,7 @@ def run_full_game_pbp(team_h, team_a):
             score_a += pts
             game_log.append(f"OT{ot_count} Away: {desc} | Score: {score_h}-{score_a}")
         
-    return score_h, score_a, game_log
+    return score_h, score_a, game_log, stats
 
 team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
