@@ -95,11 +95,17 @@ def simulate_possession(offense_team, defense_team):
     if np.random.random() < to_prob:
         return 0, "Turnover"
 
-    # 2. If no turnover, they take a shot. Did it go in?
+    # 2. Shot Attempt (Using eFG%)
     efg = df_efg.loc[df_efg['team'] == offense_team, 'efg'].iloc[0]
-    efg = efg/100
+    if efg > 1: efg /= 100
+    
     if np.random.random() < efg:
-        return 2, "Made 2pt Basket" # Simplified for now
+        # Determine if it was a 3 or a 2
+        # We use a 35% '3pt Rate' as a standard proxy
+        if np.random.random() < 0.35:
+            return 3, f"{offense_team} MADE 3PT"
+        else:
+            return 2, f"{offense_team} MADE 2PT"
     
     # 3. If they missed, did they get the offensive board?
     or_rate = df_orb.loc[df_orb['team'] == offense_team, 'orb'].iloc[0]
@@ -121,15 +127,25 @@ def run_full_game_pbp(team_h, team_a):
     score_h, score_a = 0, 0
     
     for p in range(total_poss):
-        # Home Team Possession
+        # --- Home Team Possession ---
         pts, desc = simulate_possession(team_h, team_a)
-        score_h += pts
-        game_log.append(f"Home: {desc} | Score: {score_h}-{score_a}")
+        if pts == -1: # Handling Rebound without recursion
+            new_pts, new_desc = simulate_possession(team_h, team_a)
+            pts = max(0, new_pts)
+            desc = f"{team_h} REBOUND -> {new_desc}"
         
-        # Away Team Possession
+        score_h += max(0, pts)
+        game_log.append(f"{desc} | Score: {score_h}-{score_a}")
+        
+        # --- Away Team Possession ---
         pts, desc = simulate_possession(team_a, team_h)
-        score_a += pts
-        game_log.append(f"Away: {desc} | Score: {score_h}-{score_a}")
+        if pts == -1:
+            new_pts, new_desc = simulate_possession(team_a, team_h)
+            pts = max(0, new_pts)
+            desc = f"{team_a} REBOUND -> {new_desc}"
+            
+        score_a += max(0, pts)
+        game_log.append(f"{desc} | Score: {score_h}-{score_a}")
         
     return score_h, score_a, game_log
 
