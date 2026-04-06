@@ -209,51 +209,99 @@ def run_full_game_pbp(team_h, team_a):
 
     return score_h, score_a, game_log, stats
 
+def run_monte_carlo(team_h, team_a, iterations=1000):
+    wins_h = 0
+    wins_a = 0
+    total_margin = 0
+    
+    # We use a progress bar because 1,000 sims can take a second
+    progress_bar = st.progress(0)
+    
+    for i in range(iterations):
+        # We only need the scores, we can ignore the log and stats for speed
+        s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a)
+        
+        if s_h > s_a:
+            wins_h += 1
+        elif s_a > s_h:
+            wins_a += 1
+            
+        total_margin += (s_h - s_a)
+        
+        # Update progress bar every 100 sims
+        if i % 100 == 0:
+            progress_bar.progress(i / iterations)
+            
+    progress_bar.empty() # Remove bar when done
+    
+    win_pct_h = (wins_h / iterations) * 100
+    avg_margin = total_margin / iterations
+    
+    return win_pct_h, avg_margin
+
 team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
-show_stats = st.checkbox("Show Team Box Scores")
-show_log = st.checkbox("Show Play-by-Play Log")
 
-if st.button("🎲 Simulate Matchup"):
-    score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
-    margin = abs(score_home - score_away)
-    winner = team_home if score_home > score_away else team_away
-    
-    st.write(f"**Predicted Winner:** {winner} by {margin}")
-    st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
-    
-    # UPDATE DATABASE WITH MARGIN
-    total_sims, w_min, w_max, b_min, b_max = update_count(team_home, team_away, winner, margin)
-    
-    t_min = sorted([team_home, team_away])[0]
-    wins_h, wins_a = (w_min, w_max) if team_home == t_min else (w_max, w_min)
-    blow_h, blow_a = (b_min, b_max) if team_home == t_min else (b_max, b_min)
-    
-    st.info(f"📈 Matchup simulated **{total_sims}** times.")
-    
-    st.write("### 📊 Community History")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric(f"{team_home} Total Wins", wins_h)
-        st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
-        if show_stats == True:
-            home_stats_df = pd.DataFrame(stats[team_home], index=["Stats"]).T
-            st.table(home_stats_df)
-    with col2:
-        st.metric(f"{team_away} Total Wins", wins_a)
-        st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
-        if show_stats == True:
-            away_stats_df = pd.DataFrame(stats[team_away], index=["Stats"]).T
-            st.table(away_stats_df)
+# Sidebar or Main UI
+sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch (1,000 Games)"])
 
-    if show_log:
-        with st.expander("View Full Game Transcript", expanded=True):
-            # Using a loop to print each line of the log
-            for line in game_log:
-                # Add a little styling to make the scores stand out
-                if "Score:" in line:
-                    st.write(line.replace("|", "—"))
-                else:
-                    st.write(line)
+if st.button("🎲 Run Simulation"):
+    if sim_mode == "Single Game":
+        show_stats = st.checkbox("Show Team Box Scores")
+        show_log = st.checkbox("Show Play-by-Play Log")
+        score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
+        margin = abs(score_home - score_away)
+        winner = team_home if score_home > score_away else team_away
+    
+        st.write(f"**Predicted Winner:** {winner} by {margin}")
+        st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
+    
+        # UPDATE DATABASE WITH MARGIN
+        total_sims, w_min, w_max, b_min, b_max = update_count(team_home, team_away, winner, margin)
+    
+        t_min = sorted([team_home, team_away])[0]
+        wins_h, wins_a = (w_min, w_max) if team_home == t_min else (w_max, w_min)
+        blow_h, blow_a = (b_min, b_max) if team_home == t_min else (b_max, b_min)
+    
+        st.info(f"📈 Matchup simulated **{total_sims}** times.")
+    
+        st.write("### 📊 Community History")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(f"{team_home} Total Wins", wins_h)
+            st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
+            if show_stats == True:
+                home_stats_df = pd.DataFrame(stats[team_home], index=["Stats"]).T
+                st.table(home_stats_df)
+        with col2:
+            st.metric(f"{team_away} Total Wins", wins_a)
+            st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
+            if show_stats == True:
+                away_stats_df = pd.DataFrame(stats[team_away], index=["Stats"]).T
+                st.table(away_stats_df)
 
+        if show_log:
+            with st.expander("View Full Game Transcript", expanded=True):
+                # Using a loop to print each line of the log
+                for line in game_log:
+                    # Add a little styling to make the scores stand out
+                    if "Score:" in line:
+                        st.write(line.replace("|", "—"))
+                    else:
+                        st.write(line)  
+    else:
+        with st.spinner("Analyzing 1,000 variants..."):
+            win_pct, avg_margin = run_monte_carlo(team_home, team_away)
+            
+        # Display the "Vegas Style" Probability
+        st.write(f"### {team_home} Win Probability: **{win_pct:.1f}%**")
+        
+        # Format the spread
+        if avg_margin > 0:
+            st.write(f"**Projected Line:** {team_home} -{abs(avg_margin):.1f}")
+        else:
+            st.write(f"**Projected Line:** {team_away} -{abs(avg_margin):.1f}")
+            
+        # Add a visual "Probability Bar"
+        st.progress(win_pct / 100)
