@@ -244,7 +244,17 @@ team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 
 # Sidebar or Main UI
-sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch (1,000 Games)"])
+sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
+if sim_mode == "batch":
+    num_sims = st.sidebar.number_input(
+    "Number of Simulations", 
+    min_value=1, 
+    max_value=2000, 
+    value=1000, 
+    step=100,
+    help="Maximum allowed is 2,000 simulations per click."
+)
+    
 show_stats = st.checkbox("Show Team Box Scores (Single Game Only)")
 show_log = st.checkbox("Show Play-by-Play Log (Single Game Only)")
 
