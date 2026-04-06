@@ -114,7 +114,7 @@ def simulate_possession(offense_team, defense_team):
         points, desc = simulate_possession(offense_team, defense_team) # Recursive reset
         return points, f"Missed Shot -> Off Rebound -> {desc}"
         
-    return 0, "Missed Shot"
+    return 0, f"{offense_team} Missed Shot"
 
 # def exp_poss(home, away):
 #     home_p = df_poss.loc[df_poss['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
@@ -146,6 +146,23 @@ def run_full_game_pbp(team_h, team_a):
             
         score_a += max(0, pts)
         game_log.append(f"{desc} | Score: {score_h}-{score_a}")
+    
+    ot_count = 0
+    while score_h == score_a:
+        ot_count += 1
+        game_log.append(f"--- START OF OVERTIME {ot_count} ---")
+        
+        # 5 minutes of OT is roughly 1/8th of a game (~8-10 possessions)
+        ot_possessions = 10 
+        
+        for p in range(ot_possessions):
+            pts, desc = simulate_possession(team_h, team_a)
+            score_h += pts
+            game_log.append(f"OT{ot_count} Home: {desc} | Score: {score_h}-{score_a}")
+            
+            pts, desc = simulate_possession(team_a, team_h)
+            score_a += pts
+            game_log.append(f"OT{ot_count} Away: {desc} | Score: {score_h}-{score_a}")
         
     return score_h, score_a, game_log
 
