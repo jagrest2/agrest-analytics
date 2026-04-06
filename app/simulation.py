@@ -95,26 +95,28 @@ def simulate_possession(offense_team, defense_team):
     if np.random.random() < to_prob:
         return 0, "Turnover"
 
-    # 2. Shot Attempt (Using eFG%)
+    is_three = np.random.random() < 0.35
+    
+    # Get the eFG% and normalize it
     efg = df_efg.loc[df_efg['team'] == offense_team, 'efg'].iloc[0]
     if efg > 1: efg /= 100
-    
-    if np.random.random() < efg:
-        # Determine if it was a 3 or a 2
-        # We use a 35% '3pt Rate' as a standard proxy
-        if np.random.random() < 0.35:
+
+    # --- 3. The "Make" Roll ---
+    if is_three:
+        # A 3pt make probability is lower because it's worth more points
+        # If eFG is 50%, the 3PT make prob should be ~33%
+        make_prob = efg / 1.5
+        if np.random.random() < make_prob:
             return 3, f"{offense_team} MADE 3PT"
         else:
+            return 0, f"{offense_team} Missed 3PT" # Now we can see missed 3s!
+    else:
+        # For a 2pt shot, eFG% is the same as raw FG%
+        make_prob = efg
+        if np.random.random() < make_prob:
             return 2, f"{offense_team} MADE 2PT"
-    
-    # 3. If they missed, did they get the offensive board?
-    or_rate = df_orb.loc[df_orb['team'] == offense_team, 'orb'].iloc[0]
-    or_rate = or_rate/100
-    if np.random.random() < or_rate:
-        points, desc = simulate_possession(offense_team, defense_team) # Recursive reset
-        return points, f"Missed Shot -> Off Rebound -> {desc}"
-        
-    return 0, f"{offense_team} Missed Shot"
+        else:
+            return 0, f"{offense_team} Missed 2PT"
 
 # def exp_poss(home, away):
 #     home_p = df_poss.loc[df_poss['Team'].str.contains(home, case=False, na=False), 'Poss'].iloc[0]
