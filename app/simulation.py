@@ -4,6 +4,65 @@ import requests
 import streamlit as st
 import sqlite3
 
+def init_db():
+    conn = sqlite3.connect('matchup_tracker.db')
+    c = conn.cursor()
+    
+    # 1. Create the base table if it doesn't exist at all
+    c.execute('''CREATE TABLE IF NOT EXISTS counts 
+                 (team_min TEXT, team_max TEXT, 
+                  simulation_count INTEGER,
+                  wins_min INTEGER DEFAULT 0,
+                  wins_max INTEGER DEFAULT 0,
+                  PRIMARY KEY (team_min, team_max))''')
+                  
+    # 2. The "Migration": Safely try to add the new blowout columns to existing tables
+    try:
+        c.execute("ALTER TABLE counts ADD COLUMN blowouts_min INTEGER DEFAULT 0")
+        c.execute("ALTER TABLE counts ADD COLUMN blowouts_max INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        # If the columns already exist, SQLite throws an error. We just ignore it and move on!
+        pass
+        
+    conn.commit()
+    conn.close()
+
+def update_count(t1, t2, winner_name, margin):
+    t_list = sorted([t1, t2])
+    t_min, t_max = t_list[0], t_list[1]
+    
+    # Determine win column
+    win_col = "wins_min" if winner_name == t_min else "wins_max"
+    
+    # Determine blowout column (if margin is 20 or more)
+    blowout_query = ""
+    if margin >= 20:
+        blowout_col = "blowouts_min" if winner_name == t_min else "blowouts_max"
+        blowout_query = f", {blowout_col} = {blowout_col} + 1"
+    
+    conn = sqlite3.connect('matchup_tracker.db')
+    c = conn.cursor()
+    
+    # Update total sims, wins, and potentially blowouts
+    query = f'''INSERT INTO counts (team_min, team_max, simulation_count, {win_col} {', blowouts_min' if margin >= 20 and winner_name == t_min else ''} {', blowouts_max' if margin >= 20 and winner_name == t_max else ''}) 
+                VALUES (?, ?, 1, 1 {', 1' if margin >= 20 else ''})
+                ON CONFLICT(team_min, team_max) 
+                DO UPDATE SET 
+                    simulation_count = simulation_count + 1,
+                    {win_col} = {win_col} + 1
+                    {blowout_query}'''
+                    
+    c.execute(query, (t_min, t_max))
+    conn.commit()
+    
+    c.execute("SELECT simulation_count, wins_min, wins_max, blowouts_min, blowouts_max FROM counts WHERE team_min=? AND team_max=?", (t_min, t_max))
+    stats = c.fetchone()
+    conn.close()
+    return stats 
+
+
+# Run this once at the very start of your app
+init_db()
 
 df_orb = pd.read_csv("app/data/ORB_Data_V1.csv")
 df_efg = pd.read_csv("app/data/EFG_Data_V1.csv")
@@ -85,3 +144,22 @@ if st.button("🎲 Simulate Matchup"):
     
     st.write(f"**Predicted Winner:** {winner} by {margin}")
     st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
+    
+    # UPDATE DATABASE WITH MARGIN
+    total_sims, w_min, w_max, b_min, b_max = update_count(team_home, team_away, winner, margin)
+    
+    t_min = sorted([team_home, team_away])[0]
+    wins_h, wins_a = (w_min, w_max) if team_home == t_min else (w_max, w_min)
+    blow_h, blow_a = (b_min, b_max) if team_home == t_min else (b_max, b_min)
+    
+    st.info(f"📈 Matchup simulated **{total_sims}** times.")
+    
+    st.write("### 📊 Community History")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(f"{team_home} Total Wins", wins_h)
+        st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
+    with col2:
+        st.metric(f"{team_away} Total Wins", wins_a)
+        st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
+
