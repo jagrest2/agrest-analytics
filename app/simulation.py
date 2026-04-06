@@ -209,17 +209,16 @@ def run_full_game_pbp(team_h, team_a):
 
     return score_h, score_a, game_log, stats
 
-def run_monte_carlo(team_h, team_a, iterations=num_sims):
+def run_monte_carlo(team_h, team_a, iterations):
     wins_h = 0
     wins_a = 0
     total_margin = 0
     
-    # We use a progress bar because 1,000 sims can take a second
     progress_bar = st.progress(0)
     
     for i in range(iterations):
-        # We only need the scores, we can ignore the log and stats for speed
-        s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a)
+        # Pass True for fast_mode so we skip the strings
+        s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a, fast_mode=True)
         
         if s_h > s_a:
             wins_h += 1
@@ -228,11 +227,11 @@ def run_monte_carlo(team_h, team_a, iterations=num_sims):
             
         total_margin += (s_h - s_a)
         
-        # Update progress bar every 10 sims
-        if i % 10 == 0:
+        # Update progress bar
+        if i % (max(1, iterations // 10)) == 0:
             progress_bar.progress(i / iterations)
             
-    progress_bar.empty() # Remove bar when done
+    progress_bar.empty()
     
     win_pct_h = (wins_h / iterations) * 100
     avg_margin = total_margin / iterations
@@ -243,49 +242,22 @@ team_list = sorted(df_orb['team'].unique())
 team_home = st.selectbox("Select Home Team", team_list)
 team_away = st.selectbox("Select Away Team", team_list)
 
-# Sidebar or Main UI
-sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
+# Sidebar UI
+st.sidebar.header("Simulation Settings")
+sim_mode = st.sidebar.radio("Simulation Mode", ["Single Game", "Batch"])
 
+# Only show the number input if we are in Batch mode
 if sim_mode == "Batch":
     num_sims = st.sidebar.number_input(
-    "Number of Simulations", 
-    min_value=1, 
-    max_value=2000, 
-    value=1000, 
-    step=100,
-    help="Maximum allowed is 2,000 simulations per click."
-
-    
-    def run_monte_carlo(team_h, team_a, iterations=num_sims):
-        wins_h = 0
-        wins_a = 0
-        total_margin = 0
-        
-        # We use a progress bar because 1,000 sims can take a second
-        progress_bar = st.progress(0)
-        
-        for i in range(iterations):
-            # We only need the scores, we can ignore the log and stats for speed
-            s_h, s_a, _, _ = run_full_game_pbp(team_h, team_a)
-            
-            if s_h > s_a:
-                wins_h += 1
-            elif s_a > s_h:
-                wins_a += 1
-                
-            total_margin += (s_h - s_a)
-            
-            # Update progress bar every 10 sims
-            if i % 10 == 0:
-                progress_bar.progress(i / iterations)
-                
-        progress_bar.empty() # Remove bar when done
-        
-        win_pct_h = (wins_h / iterations) * 100
-        avg_margin = total_margin / iterations
-        
-        return win_pct_h, avg_margin
-)
+        "Number of Simulations", 
+        min_value=1, 
+        max_value=5000, 
+        value=1000, 
+        step=100,
+        help="Maximum allowed is 5,000 simulations per click."
+    )
+else:
+    num_sims = 1 # Default for single game
     
 show_stats = st.checkbox("Show Team Box Scores (Single Game Only)")
 show_log = st.checkbox("Show Play-by-Play Log (Single Game Only)")
@@ -333,17 +305,9 @@ if st.button("🎲 Run Simulation"):
                     else:
                         st.write(line)  
     else:
-        with st.spinner("Analyzing {num_sims} variants..."):
-            win_pct, avg_margin = run_monte_carlo(team_home, team_away)
-            
-        # Display the "Vegas Style" Probability
-        st.write(f"### {team_home} Win Probability: **{win_pct:.1f}%**")
+        # Run the Monte Carlo batch
+        win_pct, avg_margin = run_monte_carlo(team_home, team_away, num_sims)
         
-        # Format the spread
-        if avg_margin > 0:
-            st.write(f"**Projected Line:** {team_home} -{abs(avg_margin):.1f}")
-        else:
-            st.write(f"**Projected Line:** {team_away} -{abs(avg_margin):.1f}")
-            
-        # Add a visual "Probability Bar"
-        st.progress(win_pct / 100)
+        st.write(f"### Results over {num_sims} Games")
+        st.metric(f"{team_home} Win %", f"{win_pct:.1f}%")
+        st.metric("Average Margin", f"{avg_margin:.1f}")
