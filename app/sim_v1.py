@@ -245,7 +245,7 @@ team_away = st.selectbox("Select Away Team", team_list)
 
 # Sidebar or Main UI
 sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
-if sim_mode == "batch":
+if sim_mode == "Batch":
     num_sims = st.sidebar.number_input(
     "Number of Simulations", 
     min_value=1, 
