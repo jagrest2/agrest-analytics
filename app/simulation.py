@@ -204,12 +204,24 @@ def run_full_game_pbp(team_h, team_a):
         # Home Turn
         p_h, d_h = process_possession(team_h, team_a)
         score_h += p_h
-        game_log.append(f"{d_h} | Score: {score_h}-{score_a}")
+        # Determine Leader for the Home Possession log
+        if score_h >= score_a:
+            scoreboard = f"{team_h} {score_h} - {team_a} {score_a}"
+        else:
+            scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
+            
+        game_log.append(f"{d_h} — Score: {scoreboard}")
         
         # Away Turn
         p_a, d_a = process_possession(team_a, team_h)
         score_a += p_a
-        game_log.append(f"{d_a} | Score: {score_h}-{score_a}")
+        # Determine Leader for the Home Possession log
+        if score_h >= score_a:
+            scoreboard = f"{team_h} {score_h} - {team_a} {score_a}"
+        else:
+            scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
+            
+        game_log.append(f"{d_h} — Score: {scoreboard}")
 
     # --- Overtime Loop ---
     ot_count = 0
