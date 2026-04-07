@@ -221,7 +221,7 @@ def run_full_game_pbp(team_h, team_a):
         else:
             scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
             
-        game_log.append(f"{d_h} — Score: {scoreboard}")
+        game_log.append(f"{d_a} — Score: {scoreboard}")
 
     # --- Overtime Loop ---
     ot_count = 0
