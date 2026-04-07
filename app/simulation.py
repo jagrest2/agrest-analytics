@@ -122,8 +122,14 @@ def simulate_possession(offense_name, defense_name):
         
     return 0, f"{offense_name} Missed {shot_type}"
 
+def exp_poss(home, away):
+    home_p = df_poss.loc[df_poss['team'].str.contains(home, case=False, na=False), 'poss'].iloc[0]
+    away_p = df_poss.loc[df_poss['team'].str.contains(away, case=False, na=False), 'poss'].iloc[0]
+    return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
+    
+
 def run_full_game_pbp(team_h, team_a):
-    total_poss = 70 
+    total_poss = round(exp_poss(team_h, team_a),0)
     game_log = []
     
     # Initialize the Stat Ledger
