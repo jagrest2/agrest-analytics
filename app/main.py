@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 # Import your existing functions
-from simulation import run_full_game_pbp, run_monte_carlo
+from . simulation import run_full_game_pbp, run_monte_carlo
 
 app = FastAPI()
 
