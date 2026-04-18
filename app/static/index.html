@@ -28,7 +28,8 @@
             <div id="game-log"></div>
         </div>
     </div>
-    async function runSimulation() {
+    <script>
+        async function runSimulation() {
     const homeTeam = document.getElementById('home-select').value;
     const awayTeam = document.getElementById('away-select').value;
     
@@ -44,5 +45,6 @@
     const logContainer = document.getElementById('log-container');
     logContainer.innerHTML = data.game_log.map(line => `<p>${line}</p>`).join('');
 }
+    </script>
 </body>
 </html>
