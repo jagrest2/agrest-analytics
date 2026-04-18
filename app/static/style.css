@@ -1,0 +1,27 @@
+body {
+    background-color: #1a1a1a; /* Dark mode is standard for sports analytics */
+    color: white;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    text-align: center;
+    width: 80%;
+    margin-top: 50px;
+}
+
+button {
+    background-color: #ff5722; /* High-visibility action color */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e64a19;
+}

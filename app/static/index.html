@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agrest Analytics | CBB Sim</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>CBB Matchup Engine</h1>
+        
+        <div class="input-section">
+            <select id="home-team">
+                <option value="illinois">Illinois</option>
+                <option value="jackson-st">Jackson St</option>
+            </select>
+            
+            <span>VS</span>
+            
+            <select id="away-team">
+                <option value="purdue">Purdue</option>
+            </select>
+        </div>
+
+        <button id="sim-btn">🎲 Run Simulation</button>
+
+        <div id="scoreboard">
+            <h2 id="final-score">00 - 00</h2>
+            <div id="game-log"></div>
+        </div>
+    </div>
+    async function runSimulation() {
+    const homeTeam = document.getElementById('home-select').value;
+    const awayTeam = document.getElementById('away-select').value;
+    
+    // Call the FastAPI /simulate route
+    const response = await fetch(`/simulate?home=${homeTeam}&away=${awayTeam}`);
+    const data = await response.json();
+    
+    // Update your HTML elements with the results
+    document.getElementById('score-display').innerText = 
+        `${data.home_score} - ${data.away_score}`;
+    
+    // Clear and fill the game log
+    const logContainer = document.getElementById('log-container');
+    logContainer.innerHTML = data.game_log.map(line => `<p>${line}</p>`).join('');
+}
+</body>
+</html>
