@@ -21,7 +21,7 @@
             </select>
         </div>
 
-        <button id="sim-btn">🎲 Run Simulation</button>
+        <button type="button" onclick="runSimulation()">Run Matchup</button>
 
         <div id="scoreboard">
             <h2 id="final-score">00 - 00</h2>
@@ -30,6 +30,7 @@
     </div>
     <script>
     async function runSimulation() {
+        alert("The button is connected!");
         console.log("1. Button Clicked");
         
         const homeTeam = document.getElementById('home-select').value;
