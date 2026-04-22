@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
 
 # The '.' tells Python to look in the current folder (app/) for simulation.py
 try:
@@ -28,6 +29,14 @@ static_path = os.path.join(BASE_DIR, "static")
 # Serve your HTML/CSS files
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
+@app.get("/teams")
+def get_teams():
+    # Load your CSV (using the path logic we set up earlier)
+    df = pd.read_csv("app/data/EFG_Data_V1.csv")
+    # Get unique team names and sort them alphabetically
+    teams = sorted(df['team'].unique().tolist())
+    return {"teams": teams}
+
 # 3. Single Game Simulation Endpoint
 @app.get("/simulate")
 def simulate(home: str, away: str):
@@ -37,11 +46,25 @@ def simulate(home: str, away: str):
     # Assuming your function is named run_full_game_pbp inside simulation.py
     score_h, score_a, game_log, stats = simulation.run_full_game_pbp(home, away)
     
+    winner = home if score_h > score_a else away
+    margin = abs(score_h - score_a)
+        
+    # 3. Update the SQLite DB and get the aggregate record
+    # This calls your function and returns (sim_count, wins_min, wins_max, blow_min, blow_max)
+    db_stats = simulation.update_count(home, away, winner, margin)
+        
+    # 4. Map the DB stats back to the specific Home/Away teams
+    # (Since the DB stores them alphabetically, we have to check which is which)
+    t_list = sorted([home, away])
+    home_series_wins = db_stats[1] if home == t_list[0] else db_stats[2]
+    away_series_wins = db_stats[2] if home == t_list[0] else db_stats[1]
+
     return {
         "home_score": score_h,
         "away_score": score_a,
         "log": game_log,
-        "stats": stats
+        "series_record": f"{home}: {home_series_wins} wins | {away}: {away_series_wins} wins",
+        "total_sims": db_stats[0]
     }
 
 # 4. Monte Carlo / Batch Endpoint

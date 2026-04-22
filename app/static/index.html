@@ -8,72 +8,120 @@
     <div class="container">
         <h1>CBB Matchup Engine</h1>
         
-        <div class="input-section">
+        <div>
+            <label for="home-team">Home Team:</label>
             <select id="home-team">
-                <option value="Illinois">Illinois</option>
+                <option>Loading teams...</option>
             </select>
-            
-            <span>VS</span>
-            
+
+            <label for="away-team">Away Team:</label>
             <select id="away-team">
-                <option value="Purdue">Purdue</option>
+                <option>Loading teams...</option>
             </select>
+        </div>
+
+        <div class="control-group">
+            <input type="checkbox" id="show-log-checkbox" checked>
+            <label for="show-log-checkbox">Show Play-by-Play Log</label>
         </div>
 
         <button type="button" onclick="runSimulation()">Run Matchup</button>
 
         <div class="scoreboard">
             <h2 id="score-display">Select Teams to Begin</h2>
-            <div id="game-log"></div>
+            <p id="series-history" style="text-align: center; font-size: 0.9rem; color: #666;"></p>
+            <div id="log-container"></div>
         </div>
     </div>
     <script>
-    async function runSimulation() {
-        // 1. UI Elements - Grabbing the "Scoreboard" and "Log" spots
-        const scoreHeader = document.getElementById('score-display');
-        const logContainer = document.getElementById('game-log');
-        
-        // 2. Input Data - Grabbing team names and values
-        const homeSelect = document.getElementById('home-team');
-        const awaySelect = document.getElementById('away-team');
-        
-        const homeTeamValue = homeSelect.value;
-        const awayTeamValue = awaySelect.value;
-        
-        // Get the actual names (e.g., "Illinois") for the display
-        const homeName = homeSelect.options[homeSelect.selectedIndex].text;
-        const awayName = awaySelect.options[awaySelect.selectedIndex].text;
+    
+            // This function runs the moment the page loads
+        async function loadTeams() {
+            try {
+                const response = await fetch('/teams');
+                const data = await response.json();
+                const teams = data.teams;
 
-        // 3. Loading State - Let the user know the engine is starting
-        scoreHeader.innerText = "Simulating Game...";
-        logContainer.innerHTML = "<p>Crunching numbers...</p>";
+                const homeSelect = document.getElementById('home-team');
+                const awaySelect = document.getElementById('away-team');
 
-        try {
-            // 4. The API Call - Works on both Localhost and Render
-            const response = await fetch(`/simulate?home=${homeTeamValue}&away=${awayTeamValue}`);
-            
-            if (!response.ok) {
-                throw new Error(`Server Error: ${response.status}`);
+                // Clear the "Loading..." message
+                homeSelect.innerHTML = '';
+                awaySelect.innerHTML = '';
+
+                // Loop through the 365 teams and create an option for each
+                teams.forEach(team => {
+                    let opt1 = document.createElement('option');
+                    let opt2 = document.createElement('option');
+                    
+                    opt1.value = team;
+                    opt1.text = team;
+                    opt2.value = team;
+                    opt2.text = team;
+
+                    homeSelect.add(opt1);
+                    awaySelect.add(opt2);
+                });
+
+                console.log("365 teams loaded successfully!");
+
+            } catch (error) {
+                console.error("Failed to load teams:", error);
             }
+        }
 
-            const data = await response.json();
+        // Trigger the load
+        window.onload = loadTeams;
 
-            // 5. Update Scoreboard - "Team A 80 - Team B 75"
-            scoreHeader.innerText = `${homeName} ${data.home_score} - ${awayName} ${data.away_score}`;
+        async function runSimulation() {
+                console.log("Starting Simulation...");
 
-            // 6. Update Play-by-Play - Mapping the list to HTML paragraphs
-            // Note: Using 'data.log' to match your Python dictionary key
-            logContainer.innerHTML = data.log.map(line => `<p class="log-line">${line}</p>`).join('');
+                // 1. Get UI Elements
+                const scoreHeader = document.getElementById('score-display');
+                const logContainer = document.getElementById('log-container');
+                const showLog = document.getElementById('show-log-checkbox').checked;
 
-            // 7. Optional: Auto-scroll to the top of the log
-            logContainer.scrollTop = 0;
+                // 2. Get Selection Data
+                const homeSelect = document.getElementById('home-team');
+                const awaySelect = document.getElementById('away-team');
 
-        } catch (error) {
-            console.error("Simulation Error:", error);
-            scoreHeader.innerText = "Error Running Matchup";
-            logContainer.innerHTML = `<p style="color: red;">Error: ${error.message}. Check your terminal logs.</p>`;
-        }   
-}
+                // Get the Names (e.g., "Illinois") and Values (e.g., "illinois_stats")
+                const homeName = homeSelect.options[homeSelect.selectedIndex].text;
+                const awayName = awaySelect.options[awaySelect.selectedIndex].text;
+                const homeVal = homeSelect.value;
+                const awayVal = awaySelect.value;
+
+                scoreHeader.innerText = "Simulating...";
+
+                try {
+                    // 3. Fetch from Python Backend
+                    const response = await fetch(`/simulate?home=${homeVal}&away=${awayVal}`);
+                    
+                    if (!response.ok) throw new Error("Server error");
+                    
+                    const data = await response.json();
+
+                    // 4. Update the Scoreboard with Team Names
+                    // This is the line that brings the names back!
+                    scoreHeader.innerText = `${homeName} ${data.home_score} - ${awayName} ${data.away_score}`;
+
+                    const historyLabel = document.getElementById('series-history');
+                    historyLabel.innerText = `Series History (${data.total_sims} sims): ${data.series_record}`;
+
+                    // 5. Update the Log (with safety checks)
+                    if (showLog && data.log && Array.isArray(data.log)) {
+                        logContainer.style.display = 'block';
+                        logContainer.innerHTML = data.log.map(line => `<p class="log-line">${line}</p>`).join('');
+                    } else {
+                        logContainer.style.display = 'none';
+                        logContainer.innerHTML = '';
+                    }
+
+                } catch (error) {
+                    console.error("Simulation failed:", error);
+                    scoreHeader.innerText = "Error: Check your server logs";
+                }
+            }
     </script>
 </body>
 </html>

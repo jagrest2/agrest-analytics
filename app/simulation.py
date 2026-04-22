@@ -210,7 +210,7 @@ def run_full_game_pbp(team_h, team_a):
         else:
             scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
             
-        game_log.append(f"{d_h} — Score: {scoreboard}")
+        game_log.append(f"{d_h} -- {scoreboard}")
         
         # Away Turn
         p_a, d_a = process_possession(team_a, team_h)
@@ -221,7 +221,7 @@ def run_full_game_pbp(team_h, team_a):
         else:
             scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
             
-        game_log.append(f"{d_a} — Score: {scoreboard}")
+        game_log.append(f"{d_a} -- {scoreboard}")
 
     # --- Overtime Loop ---
     ot_count = 0
@@ -265,75 +265,75 @@ def run_monte_carlo(team_h, team_a, iterations):
     return win_pct_h, avg_margin
 
 team_list = sorted(df_orb['team'].unique())
-st.title("College Hoops Simulator")
-team_home = st.selectbox("Select Home Team", team_list)
-team_away = st.selectbox("Select Away Team", team_list)
+# st.title("College Hoops Simulator")
+# team_home = st.selectbox("Select Home Team", team_list)
+# team_away = st.selectbox("Select Away Team", team_list)
 
-st.header("Simulation Settings")
-sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
+# st.header("Simulation Settings")
+# sim_mode = st.radio("Simulation Mode", ["Single Game", "Batch"])
 
-# Only show the number input if we are in Batch mode
-if sim_mode == "Batch":
-    num_sims = st.number_input(
-        "Number of Simulations", 
-        min_value=1, 
-        max_value=5000, 
-        value=1000, 
-        step=100,
-        help="Maximum allowed is 5,000 simulations per click."
-    )
-else:
-    num_sims = 1 # Default for single game
+# # Only show the number input if we are in Batch mode
+# if sim_mode == "Batch":
+#     num_sims = st.number_input(
+#         "Number of Simulations", 
+#         min_value=1, 
+#         max_value=5000, 
+#         value=1000, 
+#         step=100,
+#         help="Maximum allowed is 5,000 simulations per click."
+#     )
+# else:
+#     num_sims = 1 # Default for single game
     
-show_stats = st.checkbox("Show Team Box Scores (Single Game Only)")
-show_log = st.checkbox("Show Play-by-Play Log (Single Game Only)")
+# show_stats = st.checkbox("Show Team Box Scores (Single Game Only)")
+# show_log = st.checkbox("Show Play-by-Play Log (Single Game Only)")
 
-if st.button("🎲 Run Simulation"):
-    if sim_mode == "Single Game":
-        score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
-        margin = abs(score_home - score_away)
-        winner = team_home if score_home > score_away else team_away
+# if st.button("🎲 Run Simulation"):
+#     if sim_mode == "Single Game":
+#         score_home, score_away, game_log, stats = run_full_game_pbp(team_home, team_away)
+#         margin = abs(score_home - score_away)
+#         winner = team_home if score_home > score_away else team_away
     
-        st.write(f"**Predicted Winner:** {winner} by {margin}")
-        st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
+#         st.write(f"**Predicted Winner:** {winner} by {margin}")
+#         st.subheader(f"{team_home} {score_home} - {team_away} {score_away}")
     
-        # UPDATE DATABASE WITH MARGIN
-        total_sims, w_min, w_max, b_min, b_max = update_count(team_home, team_away, winner, margin)
+#         # UPDATE DATABASE WITH MARGIN
+#         total_sims, w_min, w_max, b_min, b_max = update_count(team_home, team_away, winner, margin)
     
-        t_min = sorted([team_home, team_away])[0]
-        wins_h, wins_a = (w_min, w_max) if team_home == t_min else (w_max, w_min)
-        blow_h, blow_a = (b_min, b_max) if team_home == t_min else (b_max, b_min)
+#         t_min = sorted([team_home, team_away])[0]
+#         wins_h, wins_a = (w_min, w_max) if team_home == t_min else (w_max, w_min)
+#         blow_h, blow_a = (b_min, b_max) if team_home == t_min else (b_max, b_min)
     
-        st.info(f"📈 Matchup simulated **{total_sims}** times.")
+#         st.info(f"📈 Matchup simulated **{total_sims}** times.")
     
-        st.write("### 📊 Community History")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric(f"{team_home} Total Wins", wins_h)
-            st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
-            if show_stats == True:
-                home_stats_df = pd.DataFrame(stats[team_home], index=["Stats"]).T
-                st.table(home_stats_df)
-        with col2:
-            st.metric(f"{team_away} Total Wins", wins_a)
-            st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
-            if show_stats == True:
-                away_stats_df = pd.DataFrame(stats[team_away], index=["Stats"]).T
-                st.table(away_stats_df)
+#         st.write("### 📊 Community History")
+#         col1, col2 = st.columns(2)
+#         with col1:
+#             st.metric(f"{team_home} Total Wins", wins_h)
+#             st.metric(f"{team_home} 20+ Pt Blowouts", blow_h)
+#             if show_stats == True:
+#                 home_stats_df = pd.DataFrame(stats[team_home], index=["Stats"]).T
+#                 st.table(home_stats_df)
+#         with col2:
+#             st.metric(f"{team_away} Total Wins", wins_a)
+#             st.metric(f"{team_away} 20+ Pt Blowouts", blow_a)
+#             if show_stats == True:
+#                 away_stats_df = pd.DataFrame(stats[team_away], index=["Stats"]).T
+#                 st.table(away_stats_df)
 
-        if show_log:
-            with st.expander("View Full Game Transcript", expanded=True):
-                # Using a loop to print each line of the log
-                for line in game_log:
-                    # Add a little styling to make the scores stand out
-                    if "Score:" in line:
-                        st.write(line.replace("|", "—"))
-                    else:
-                        st.write(line)  
-    else:
-        # Run the Monte Carlo batch
-        win_pct, avg_margin = run_monte_carlo(team_home, team_away, num_sims)
+#         if show_log:
+#             with st.expander("View Full Game Transcript", expanded=True):
+#                 # Using a loop to print each line of the log
+#                 for line in game_log:
+#                     # Add a little styling to make the scores stand out
+#                     if "Score:" in line:
+#                         st.write(line.replace("|", "—"))
+#                     else:
+#                         st.write(line)  
+#     else:
+#         # Run the Monte Carlo batch
+#         win_pct, avg_margin = run_monte_carlo(team_home, team_away, num_sims)
         
-        st.write(f"### Results over {num_sims} Games")
-        st.metric(f"{team_home} Win %", f"{win_pct:.1f}%")
-        st.metric("Average Margin", f"{avg_margin:.1f}")
+#         st.write(f"### Results over {num_sims} Games")
+#         st.metric(f"{team_home} Win %", f"{win_pct:.1f}%")
+#         st.metric("Average Margin", f"{avg_margin:.1f}")
