@@ -22,44 +22,57 @@
 
         <button type="button" onclick="runSimulation()">Run Matchup</button>
 
-        <div id="scoreboard">
-            <h2 id="score-display">00 - 00</h2>
-            <div id="log-container"></div>
+        <div class="scoreboard">
+            <h2 id="score-display">Select Teams to Begin</h2>
+            <div id="game-log"></div>
         </div>
     </div>
     <script>
     async function runSimulation() {
-        alert("The button is connected!");
-        console.log("1. Button Clicked");
+        // 1. UI Elements - Grabbing the "Scoreboard" and "Log" spots
+        const scoreHeader = document.getElementById('score-display');
+        const logContainer = document.getElementById('game-log');
         
-        const homeTeam = document.getElementById('home-team').value;
-        const awayTeam = document.getElementById('away-team').value;
+        // 2. Input Data - Grabbing team names and values
+        const homeSelect = document.getElementById('home-team');
+        const awaySelect = document.getElementById('away-team');
         
-        console.log(`2. Attempting to fetch: /simulate?home=${homeTeam}&away=${awayTeam}`);
+        const homeTeamValue = homeSelect.value;
+        const awayTeamValue = awaySelect.value;
+        
+        // Get the actual names (e.g., "Illinois") for the display
+        const homeName = homeSelect.options[homeSelect.selectedIndex].text;
+        const awayName = awaySelect.options[awaySelect.selectedIndex].text;
+
+        // 3. Loading State - Let the user know the engine is starting
+        scoreHeader.innerText = "Simulating Game...";
+        logContainer.innerHTML = "<p>Crunching numbers...</p>";
 
         try {
-            const response = await fetch(`/simulate?home=${homeTeam}&away=${awayTeam}`);
+            // 4. The API Call - Works on both Localhost and Render
+            const response = await fetch(`/simulate?home=${homeTeamValue}&away=${awayTeamValue}`);
             
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`Server Error: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log("3. Data received successfully:", data);
 
-            // Update the Score
-            document.getElementById('score-display').innerText = `${data.home_score} - ${data.away_score}`;
+            // 5. Update Scoreboard - "Team A 80 - Team B 75"
+            scoreHeader.innerText = `${homeName} ${data.home_score} - ${awayName} ${data.away_score}`;
 
-            // Update the Log
-            const logContainer = document.getElementById('log-container');
-            logContainer.innerHTML = data.log.map(line => `<p>${line}</p>`).join('');
-            
-            console.log("4. UI Update Complete");
+            // 6. Update Play-by-Play - Mapping the list to HTML paragraphs
+            // Note: Using 'data.log' to match your Python dictionary key
+            logContainer.innerHTML = data.log.map(line => `<p class="log-line">${line}</p>`).join('');
+
+            // 7. Optional: Auto-scroll to the top of the log
+            logContainer.scrollTop = 0;
 
         } catch (error) {
-            console.error("FATAL ERROR in simulation:", error);
-            document.getElementById('score-display').innerText = "Simulation Failed. Check Console.";
-        }
+            console.error("Simulation Error:", error);
+            scoreHeader.innerText = "Error Running Matchup";
+            logContainer.innerHTML = `<p style="color: red;">Error: ${error.message}. Check your terminal logs.</p>`;
+        }   
 }
     </script>
 </body>
