@@ -36,14 +36,15 @@
     // Call the FastAPI /simulate route
     const response = await fetch(`/simulate?home=${homeTeam}&away=${awayTeam}`);
     const data = await response.json();
-    
-    // Update your HTML elements with the results
-    document.getElementById('score-display').innerText = 
-        `${data.home_score} - ${data.away_score}`;
-    
-    // Clear and fill the game log
+
+    // 1. Update the Score
+    document.getElementById('score-display').innerText = `${data.home_score} - ${data.away_score}`;
+
+    // 2. Update the Log (This turns the List into individual Paragraphs)
     const logContainer = document.getElementById('log-container');
-    logContainer.innerHTML = data.game_log.map(line => `<p>${line}</p>`).join('');
+
+    // Use .map() to wrap every line of the log in <p> tags
+    logContainer.innerHTML = data.log.map(line => `<p class="log-line">${line}</p>`).join('');
 }
     </script>
 </body>
