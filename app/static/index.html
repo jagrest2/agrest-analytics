@@ -29,22 +29,37 @@
         </div>
     </div>
     <script>
-        async function runSimulation() {
-    const homeTeam = document.getElementById('home-select').value;
-    const awayTeam = document.getElementById('away-select').value;
-    
-    // Call the FastAPI /simulate route
-    const response = await fetch(`/simulate?home=${homeTeam}&away=${awayTeam}`);
-    const data = await response.json();
+    async function runSimulation() {
+        console.log("1. Button Clicked");
+        
+        const homeTeam = document.getElementById('home-select').value;
+        const awayTeam = document.getElementById('away-select').value;
+        
+        console.log(`2. Attempting to fetch: /simulate?home=${homeTeam}&away=${awayTeam}`);
 
-    // 1. Update the Score
-    document.getElementById('score-display').innerText = `${data.home_score} - ${data.away_score}`;
+        try {
+            const response = await fetch(`/simulate?home=${homeTeam}&away=${awayTeam}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-    // 2. Update the Log (This turns the List into individual Paragraphs)
-    const logContainer = document.getElementById('log-container');
+            const data = await response.json();
+            console.log("3. Data received successfully:", data);
 
-    // Use .map() to wrap every line of the log in <p> tags
-    logContainer.innerHTML = data.log.map(line => `<p class="log-line">${line}</p>`).join('');
+            // Update the Score
+            document.getElementById('score-display').innerText = `${data.home_score} - ${data.away_score}`;
+
+            // Update the Log
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = data.log.map(line => `<p>${line}</p>`).join('');
+            
+            console.log("4. UI Update Complete");
+
+        } catch (error) {
+            console.error("FATAL ERROR in simulation:", error);
+            document.getElementById('score-display').innerText = "Simulation Failed. Check Console.";
+        }
 }
     </script>
 </body>
