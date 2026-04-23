@@ -100,9 +100,7 @@ df_total = df_orb.merge(df_efg, on = 'team')
 df_total = df_total.merge(df_tov, on = 'team')
 df_total = df_total.merge(df_opp, on = 'team')
 df_total = df_total.merge(df_poss, on = 'team')
-df_total = df_total.merge(df_sos, on = 'team')
-# df_total
-                
+df_total = df_total.merge(df_sos, on = 'team')               
 
 df_total['orb_real'] = df_total['orb'] * df_total['rating']
 df_total['efg_real'] = df_total['efg'] * df_total['rating']
@@ -254,9 +252,27 @@ def run_full_game_pbp(team_h, team_a):
         ot_count += 1
         game_log.append(f"--- START OF OVERTIME {ot_count} ---")
         for p in range(10): # 5 mins = ~10 possessions
+            # Home Turn
             p_h, d_h = process_possession(team_h, team_a)
             score_h += p_h
-            game_log.append(f"OT{ot_count} {d_h} | Score: {score_h}-{score_a}")
+            # Determine Leader for the Home Possession log
+            if score_h >= score_a:
+                scoreboard = f"{team_h} {score_h} - {team_a} {score_a}"
+            else:
+                scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
+                
+            game_log.append(f"{d_h} -- {scoreboard}")
+            
+            # Away Turn
+            p_a, d_a = process_possession(team_a, team_h)
+            score_a += p_a
+            # Determine Leader for the Home Possession log
+            if score_h >= score_a:
+                scoreboard = f"{team_h} {score_h} - {team_a} {score_a}"
+            else:
+                scoreboard = f"{team_a} {score_a} - {team_h} {score_h}"
+                
+            game_log.append(f"{d_a} -- {scoreboard}")
 
     return score_h, score_a, game_log, stats
 
