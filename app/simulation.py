@@ -69,9 +69,10 @@ df_efg = pd.read_csv("app/data/EFG_Data_V1.csv")
 df_tov = pd.read_csv("app/data/TOV_Data_V1.csv")
 df_opp = pd.read_csv("app/data/OPP_Data_V1.csv")
 df_poss = pd.read_csv("app/data/POSS_Data_V1.csv")
+df_sos = pd.read_csv("app/data/SOS_Data_V1.csv")
 
 # Create a list of all your dataframes to clean them all at once
-all_dfs = [df_orb, df_efg, df_tov, df_opp, df_poss]
+all_dfs = [df_orb, df_efg, df_tov, df_opp, df_poss, df_sos]
 
 for d in all_dfs:
     d.columns = d.columns.str.lower().str.strip()
@@ -79,16 +80,40 @@ for d in all_dfs:
     
     # NEW: Remove '%' from every cell in the dataframe and convert to numbers
     for col in d.columns:
-        if col not in ['rank', 'team']:
+        if col not in ['rank', 'team', 'rating']:
             # 1. Replace the % with nothing
             # 2. Convert to numeric (turns "15.5" into 15.5)
             d[col] = pd.to_numeric(d[col].astype(str).str.replace('%', ''), errors='coerce')
 
+df_sos['rating'] = (df_sos['rating'] / 100) + 1
+
+df_orb = df_orb.drop(columns = ["last 3", "last 1", "home", "away", "2024", "rank"])
+df_efg = df_efg.drop(columns = ["last 3", "last 1", "home", "away", "2024", "rank"]) 
+df_tov = df_tov.drop(columns = ["last 3", "last 1", "home", "away", "2024", "rank"]) 
+df_opp = df_opp.drop(columns = ["last 3", "last 1", "home", "away", "2024", "rank"]) 
+df_poss = df_poss.drop(columns = ["last 3", "last 1", "home", "away", "2024", "rank"]) 
+df_sos = df_sos.drop(columns = ["rank", "hi", "lo", "last"]) 
+
+
+
+df_total = df_orb.merge(df_efg, on = 'team')
+df_total = df_total.merge(df_tov, on = 'team')
+df_total = df_total.merge(df_opp, on = 'team')
+df_total = df_total.merge(df_poss, on = 'team')
+df_total = df_total.merge(df_sos, on = 'team')
+# df_total
+                
+
+df_total['orb_real'] = df_total['orb'] * df_total['rating']
+df_total['efg_real'] = df_total['efg'] * df_total['rating']
+df_total['tov_real'] = df_total['turnover_x'] * df_total['rating']
+df_total['opp_real'] = df_total['turnover_y'] * df_total['rating']
+
 
 def simulate_possession(offense_name, defense_name):
     # --- 1. Turnover Check ---
-    off_tov = df_tov.loc[df_tov['team'] == offense_name, 'turnover'].iloc[0]
-    def_tov = df_opp.loc[df_opp['team'] == defense_name, 'turnover'].iloc[0]
+    off_tov = df_total.loc[df_total['team'] == offense_name, 'tov_real'].iloc[0]
+    def_tov = df_total.loc[df_total['team'] == defense_name, 'opp_real'].iloc[0]
     to_prob = (off_tov + def_tov) / 2
     if to_prob > 1: to_prob /= 100
                
@@ -97,7 +122,7 @@ def simulate_possession(offense_name, defense_name):
 
     # --- 2. Shot Selection ---
     is_three = np.random.random() < 0.35 
-    efg = df_efg.loc[df_efg['team'] == offense_name, 'efg'].iloc[0]
+    efg = df_total.loc[df_total['team'] == offense_name, 'efg_real'].iloc[0]
     if efg > 1: efg /= 100
 
     # Determine shot outcome
@@ -112,7 +137,7 @@ def simulate_possession(offense_name, defense_name):
             return 2, f"{offense_name} MADE 2PT"
 
     # --- 3. Rebound Check (ONLY reached if shot was missed) ---
-    or_rate = df_orb.loc[df_orb['team'] == offense_name, 'orb'].iloc[0]
+    or_rate = df_total.loc[df_total['team'] == offense_name, 'orb_real'].iloc[0]
     if or_rate > 1: or_rate /= 100
     
     if np.random.random() < or_rate:
