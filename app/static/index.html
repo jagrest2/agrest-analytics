@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Agrest Analytics | CBB Sim</title>
+    <title>Agrest Analytics</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="images/Gemini_Generated_Image_bct4jzbct4jzbct4.ico">
 </head>
 <body>
+    <div class="navbar">
+        <img class = "logo" src = "images/ChatGPT Image Jun 9, 2026, 02_05_22 PM.png" alt = "Logo">
+        <a href="index.html">Simulate</a>
+        <a href="about.html">About</a>
+    </div>
     <div class="container">
         <h1>CBB Matchup Engine</h1>
         
@@ -20,22 +26,37 @@
             </select>
         </div>
 
-        <div class="control-group">
-            <input type="checkbox" id="show-log-checkbox" checked>
-            <label for="show-log-checkbox">Show Play-by-Play Log</label>
+        <div class="control-group" style="margin: 15px 0;">
+            <input type="checkbox" id="home-court-checkbox" checked>
+            <label for="home-court-checkbox">Home Court Advantage?</label>
         </div>
 
         <button type="button" onclick="runSimulation()">Run Matchup</button>
+        <button type="button" onclick="runBatchSimulation()">Run 100x Batch</button>
 
         <div class="scoreboard">
             <h2 id="score-display">Select Teams to Begin</h2>
             <p id="series-history" style="text-align: center; font-size: 0.9rem; color: #666;"></p>
-            <div id="log-container"></div>
         </div>
+            
+            <div id="batch-container" style="display: none; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                <h3>100-Game Batch Results</h3>
+                <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                        <p><strong>Home Wins</strong></p>
+                        <h4 id="batch-home-wins" style="font-size: 1.5rem; color: #2ecc71;">0</h4>
+                        <p id="batch-home-avg" style="color: #666;">Avg: 0.0</p>
+                    </div>
+                    <div>
+                        <p><strong>Away Wins</strong></p>
+                        <h4 id="batch-away-wins" style="font-size: 1.5rem; color: #e74c3c;">0</h4>
+                        <p id="batch-away-avg" style="color: #666;">Avg: 0.0</p>
+                    </div>
+                </div>
+            </div>
     </div>
+
     <script>
-    
-            // This function runs the moment the page loads
         async function loadTeams() {
             try {
                 const response = await fetch('/teams');
@@ -45,11 +66,9 @@
                 const homeSelect = document.getElementById('home-team');
                 const awaySelect = document.getElementById('away-team');
 
-                // Clear the "Loading..." message
                 homeSelect.innerHTML = '';
                 awaySelect.innerHTML = '';
 
-                // Loop through the 365 teams and create an option for each
                 teams.forEach(team => {
                     let opt1 = document.createElement('option');
                     let opt2 = document.createElement('option');
@@ -62,66 +81,96 @@
                     homeSelect.add(opt1);
                     awaySelect.add(opt2);
                 });
-
-                console.log("365 teams loaded successfully!");
-
             } catch (error) {
                 console.error("Failed to load teams:", error);
             }
         }
 
-        // Trigger the load
         window.onload = loadTeams;
 
         async function runSimulation() {
-                console.log("Starting Simulation...");
+            console.log("Starting Simulation...");
 
-                // 1. Get UI Elements
-                const scoreHeader = document.getElementById('score-display');
-                const logContainer = document.getElementById('log-container');
-                const showLog = document.getElementById('show-log-checkbox').checked;
+            // 1. Get UI Elements
+            const scoreHeader = document.getElementById('score-display');
+            const historyLabel = document.getElementById('series-history');
 
-                // 2. Get Selection Data
-                const homeSelect = document.getElementById('home-team');
-                const awaySelect = document.getElementById('away-team');
+            // 2. Get Selection Data
+            const homeSelect = document.getElementById('home-team');
+            const awaySelect = document.getElementById('away-team');
 
-                // Get the Names (e.g., "Illinois") and Values (e.g., "illinois_stats")
-                const homeName = homeSelect.options[homeSelect.selectedIndex].text;
-                const awayName = awaySelect.options[awaySelect.selectedIndex].text;
-                const homeVal = homeSelect.value;
-                const awayVal = awaySelect.value;
+            const homeName = homeSelect.options[homeSelect.selectedIndex].text;
+            const awayName = awaySelect.options[awaySelect.selectedIndex].text;
+            const homeVal = homeSelect.value;
+            const awayVal = awaySelect.value;
 
-                scoreHeader.innerText = "Simulating...";
+            scoreHeader.innerText = "Simulating...";
+            if (historyLabel) historyLabel.innerText = ""; 
 
-                try {
-                    // 3. Fetch from Python Backend
-                    const response = await fetch(`/simulate?home=${homeVal}&away=${awayVal}`);
-                    
-                    if (!response.ok) throw new Error("Server error");
-                    
-                    const data = await response.json();
+            try {
+                // FIX: Added &home_court=false explicitly to the URL string so FastAPI doesn't crash
+                const response = await fetch(`/simulate?home=${encodeURIComponent(homeVal)}&away=${encodeURIComponent(awayVal)}&home_court=false`);
+                
+                if (!response.ok) throw new Error("Server returned a bad status code");
+                
+                const data = await response.json();
 
-                    // 4. Update the Scoreboard with Team Names
-                    // This is the line that brings the names back!
-                    scoreHeader.innerText = `${homeName} ${data.home_score} - ${awayName} ${data.away_score}`;
+                // 3. Update the Scoreboard with Team Names and Scores
+                scoreHeader.innerText = `${homeName} ${data.home_score} - ${awayName} ${data.away_score}`;
 
-                    const historyLabel = document.getElementById('series-history');
+                // 4. Update the History Record
+                if (historyLabel && data.total_sims && data.series_record) {
                     historyLabel.innerText = `Series History (${data.total_sims} sims): ${data.series_record}`;
-
-                    // 5. Update the Log (with safety checks)
-                    if (showLog && data.log && Array.isArray(data.log)) {
-                        logContainer.style.display = 'block';
-                        logContainer.innerHTML = data.log.map(line => `<p class="log-line">${line}</p>`).join('');
-                    } else {
-                        logContainer.style.display = 'none';
-                        logContainer.innerHTML = '';
-                    }
-
-                } catch (error) {
-                    console.error("Simulation failed:", error);
-                    scoreHeader.innerText = "Error: Check your server logs";
                 }
+
+            } catch (error) {
+                console.error("Simulation failed:", error);
+                scoreHeader.innerText = "Error: Check your server logs";
             }
+        }
+
+        async function runBatchSimulation() {
+            console.log("Starting Batch Simulation...");
+
+            const scoreHeader = document.getElementById('score-display');
+            const batchContainer = document.getElementById('batch-container');
+            
+            const homeSelect = document.getElementById('home-team');
+            const awaySelect = document.getElementById('away-team');
+            const isHomeCourt = document.getElementById('home-court-checkbox').checked;
+
+            const homeName = homeSelect.options[homeSelect.selectedIndex].text;
+            const awayName = awaySelect.options[awaySelect.selectedIndex].text;
+            const homeVal = homeSelect.value;
+            const awayVal = awaySelect.value;
+
+            scoreHeader.innerText = "Running 100 Simulations...";
+            batchContainer.style.display = 'none'; // Hide old batch results while loading
+
+            try {
+                // Fetch from the /batch endpoint
+                const response = await fetch(`/batch?home=${encodeURIComponent(homeVal)}&away=${encodeURIComponent(awayVal)}&home_court=${isHomeCourt}`);
+                
+                if (!response.ok) throw new Error("Server error");
+                
+                const data = await response.json();
+
+                // 1. Update main header to show the breakdown summary
+                scoreHeader.innerText = `${homeName} Wins: ${data.home_wins} | ${awayName} Wins: ${data.away_wins}`;
+
+                // 2. Populate and unhide the comprehensive batch breakdown panel
+                document.getElementById('batch-home-wins').innerText = `${data.home_wins} Games`;
+                document.getElementById('batch-away-wins').innerText = `${data.away_wins} Games`;
+                document.getElementById('batch-home-avg').innerText = `Avg Score: ${data.avg_home_score}`;
+                document.getElementById('batch-away-avg').innerText = `Avg Score: ${data.avg_away_score}`;
+                
+                batchContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error("Batch simulation failed:", error);
+                scoreHeader.innerText = "Error: Check your server logs";
+            }
+        }
     </script>
 </body>
 </html>
