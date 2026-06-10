@@ -68,11 +68,11 @@ init_db()
 st.title("College Hoops Predictor")
 
 # --- DATA LOADING SECTION ---
-df = pd.read_csv("app/data/kp_1220.csv")
+df = pd.read_csv("app/data/2026/output.csv")
 
-df["Offense"] = pd.to_numeric(df["ORtg"], errors='coerce')
-df["Defense"] = pd.to_numeric(df["DRtg"], errors='coerce')
-df["Poss"] = pd.to_numeric(df["AdjT"], errors='coerce')
+df["Offense"] = pd.to_numeric(df["Offensive"], errors='coerce')
+df["Defense"] = pd.to_numeric(df["Defensive"], errors='coerce')
+df["Poss"] = pd.to_numeric(df["Possessions"], errors='coerce')
 
 # --- LOGIC FUNCTIONS ---
 def exp_poss(home, away):
@@ -81,7 +81,7 @@ def exp_poss(home, away):
     return 69 - (69 - home_p) - (69 - away_p) if (home_p < 69 and away_p < 69) else 69 + (home_p - 69) + (away_p - 69) if (home_p > 69 and away_p > 69) else (home_p + away_p) / 2
     
 def predict_score(home, away, home_court):
-    exponent, points_multiplier = 2.5, 0.92
+    exponent, points_multiplier = 2.5, 0.89
     h_off, a_off = df.loc[df['Team'] == home, 'Offense'].iloc[0], df.loc[df['Team'] == away, 'Offense'].iloc[0]
     h_def, a_def = df.loc[df['Team'] == home, 'Defense'].iloc[0], df.loc[df['Team'] == away, 'Defense'].iloc[0]
     tempo = exp_poss(home, away)

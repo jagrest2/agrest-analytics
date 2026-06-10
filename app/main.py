@@ -1,9 +1,14 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import random
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 
 # Note: Make sure your "model.py" file is renamed to "simulation.py" 
 # so this import works correctly!
@@ -29,7 +34,7 @@ app.mount("/static", StaticFiles(directory=static_path), name="static")
 @app.get("/teams")
 def get_teams():
     # FIX: Point to the exact directory where the CSV lives
-    df = pd.read_csv("app/data/kp_1220.csv")
+    df = pd.read_csv("app/data/2026/output.csv")
     
     # Clean up the data: drop empty rows and ensure everything is a string
     df = df.dropna(subset=['Team'])
@@ -73,3 +78,33 @@ def batch(home: str, away: str, home_court: bool = False, sims: int = 100):
 @app.get("/")
 def read_root():
     return {"status": "Online", "message": "Visit /static/index.html to use the app"}
+
+# Calculate the exact, absolute path to your 'static' folder on your hard drive
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(CURRENT_DIR, "static")
+TABLE_HTML_PATH = os.path.join(STATIC_DIR, "table.html")
+
+# 1. Your Data API Endpoint (The frontend JavaScript calls this)
+@app.get("/api/efficiencies")
+async def get_efficiencies():
+    df = pd.read_csv("app/data/2026/output2.csv")
+    df = df.fillna(0)
+    df = df[df["Possessions"] != 0]
+    return df.to_dict(orient="records")
+
+# 2. ROUTE FALLBACK A: If you type http://127.0.0.1:8000/table
+@app.get("/table")
+async def serve_table_no_ext():
+    if os.path.exists(TABLE_HTML_PATH):
+        return FileResponse(TABLE_HTML_PATH)
+    return {"error": f"Could not find table.html at verified path: {TABLE_HTML_PATH}"}
+
+# 3. ROUTE FALLBACK B: If you type http://127.0.0.1:8000/table.html
+@app.get("/table.html")
+async def serve_table_with_ext():
+    if os.path.exists(TABLE_HTML_PATH):
+        return FileResponse(TABLE_HTML_PATH)
+    return {"error": f"Could not find table.html at verified path: {TABLE_HTML_PATH}"}
+
+# 4. Mount the rest of the static folder for CSS/JS assets if you have them
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

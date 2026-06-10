@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrest Analytics | Team Efficiency Ratings</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body { background-color: silver; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { background-color: #1e1e1e; border: 1px solid #2d2d2d; border-radius: 8px; }
+        
+        /* DataTables Custom Overrides for Premium Dark UI */
+        .table { color: #e0e0e0 !important; border-color: #2d2d2d; }
+        .table-striped tbody tr:nth-of-type(odd) { background-color: green; }
+        .table-striped tbody tr:nth-of-type(even) { background-color: orange; }
+        .table-hover tbody tr:hover { background-color: #252525; color: #fff !important; }
+        thead { background-color: #0d6efd; color: #fff; }
+        
+        /* Fixing search filters/pagination styling layout to match dark theme */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: wheat;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        .page-link { background-color: wheat; border-color: #2d2d2d; color: #0d6efd; }
+        .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <img class = "logo" src = "images/ChatGPT Image Jun 9, 2026, 02_05_22 PM.png" alt = "Logo">
+        <a href="table.html">NCAAM</a>
+        <a href="index.html">Simulate</a>
+        <a href="about.html">About</a>
+    </div>
+    <div class="container-fluid px-4 py-5">
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold text-primary">AGREST ANALYTICS</h1>
+            <p class="text-muted fs-5">Advanced Division I Team Efficiencies & Performance Frameworks</p>
+        </div>
+
+        <div class="card p-4 shadow-sm">
+            <div class="table-responsive">
+                <table id="efficiencyTable" class="table table-striped table-hover align-middle w-100">
+                    </table>
+            </div>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+    // Fetch the raw data directly from your FastAPI data endpoint
+    fetch('/api/efficiencies')
+        .then(response => response.json())
+        .then(rawData => {
+            
+            // Safety check to ensure data exists
+            if (!rawData || rawData.length === 0) {
+                $('#efficiencyTable').html('<p class="text-center text-danger p-3">No data records found or backend CSV is empty.</p>');
+                return;
+            }
+
+            // Dynamically extract and format table headers from the CSV keys
+            const columns = Object.keys(rawData[0]).map(key => {
+                return { 
+                    data: key, 
+                    title: key.replace(/_/g, ' ') 
+                };
+            });
+
+            // Instantiate your interactive DataTables engine
+            $('#efficiencyTable').DataTable({
+                data: rawData,
+                columns: columns,
+                paging: false,
+                order: [[0, 'asc']],
+                responsive: true,
+                dom: "<'row mb-3'<'col-md-6'l><'col-md-6 d-flex justify-content-md-end'f>>" +
+                     "<'row'<'col-sm-12'tr>>" +
+                     "<'row mt-3'<'col-md-5'i><'col-md-7 d-flex justify-content-md-end'p>>",
+                language: {
+                    search: "",
+                    searchPlaceholder: "🔍 Search teams or conferences...",
+                    lengthMenu: "Show _MENU_ entries"
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+            $('#efficiencyTable').html('<p class="text-center text-danger p-3">Failed to load data from the server API.</p>');
+        });
+});
+</script>
+</body>
+</html>
