@@ -6,3 +6,12 @@ jinja2
 streamlit
 requests
 gunicorn
+CBBpy
+python-dateutil
+pytz
+tqdm
+lxml
+joblib
+beautifulsoup4
+rapidfuzz
+platformdirs

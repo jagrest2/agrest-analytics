@@ -42,9 +42,8 @@
         <a href="about.html">About</a>
     </div>
     <div class="container-fluid px-4 py-5">
-        <div class="text-center mb-4">
-            <h1 class="display-5 fw-bold text-primary">AGREST ANALYTICS</h1>
-            <p class="text-muted fs-5">Advanced Division I Team Efficiencies & Performance Frameworks</p>
+        <div class="container">
+            <h1>2026 Agrest Analytics Efficiencies</h1>
         </div>
 
         <div class="card p-4 shadow-sm">
@@ -61,45 +60,92 @@
 
 <script>
     $(document).ready(function() {
-    // Fetch the raw data directly from your FastAPI data endpoint
     fetch('/api/efficiencies')
         .then(response => response.json())
         .then(rawData => {
+            console.log("MY TEAM DATA:", rawData[0]);
             
-            // Safety check to ensure data exists
             if (!rawData || rawData.length === 0) {
-                $('#efficiencyTable').html('<p class="text-center text-danger p-3">No data records found or backend CSV is empty.</p>');
+                $('#efficiencyTable').html('<p class="text-center text-danger p-3">No data records found.</p>');
                 return;
             }
 
-            // Dynamically extract and format table headers from the CSV keys
+            // 1. Map your standard CSV columns exactly as before
             const columns = Object.keys(rawData[0]).map(key => {
                 return { 
                     data: key, 
                     title: key.replace(/_/g, ' ') 
                 };
+                // --- ADD THIS RENDERER FOR THE TEAM COLUMN ---
+                // If the data key matches your team name column (adjust "Team" if it's lowercased or called something else)
+                if (key === "Team") {
+                    columnConfig.render = function(data, type, row) {
+                        if (type === 'display' && data) {
+                            return `<a href="/team?name=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd;">${data}</a>`;
+                        }
+                        return data;
+                    };
+                }
+
+                return columnConfig;
             });
 
-            // Instantiate your interactive DataTables engine
-            $('#efficiencyTable').DataTable({
-                data: rawData,
-                columns: columns,
-                paging: false,
-                order: [[0, 'asc']],
-                responsive: true,
-                dom: "<'row mb-3'<'col-md-6'l><'col-md-6 d-flex justify-content-md-end'f>>" +
-                     "<'row'<'col-sm-12'tr>>" +
-                     "<'row mt-3'<'col-md-5'i><'col-md-7 d-flex justify-content-md-end'p>>",
-                language: {
-                    search: "",
-                    searchPlaceholder: "🔍 Search teams or conferences...",
-                    lengthMenu: "Show _MENU_ entries"
+        // INJECT THE RANK COLUMN USING THE DISPLAY INDEX
+        columns.unshift({
+            data: "Overall_Rank",
+            title: "Rank",
+            orderable: false,
+            defaultContent: "",
+            render: function (data, type, row, meta) {
+                if (type === 'display') {
+                    // THE FIX: Search the display array to find the exact sorted position of this row
+                    return meta.settings.aiDisplay.indexOf(meta.row) + 1;
                 }
-            });
+                return meta.row + 1;
+            }
+        });
+
+        // 2. Initialize the high-density engine
+        const table = $('#efficiencyTable').DataTable({
+            data: rawData,
+            columns: columns,
+
+            columnDefs: [
+                {
+                    targets: '_all', // Look at all columns
+                    render: function(data, type, row, meta) {
+                        // If this column's header title is "Team", turn it into a link
+                        if (meta.settings.aoColumns[meta.col].sTitle === "Team" && type === 'display' && data) {
+                            return `<a href="/team?name=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd; display: inline-block;">${data}</a>`;
+                        }
+                        return data;
+                    }
+                }
+            ],
+            paging: false,                 
+            scrollCollapse: true,   
+            responsive: true,
+            order: [[2, 'desc']], // Keeps sorting automatically by your Net column
+            dom: "<'row mb-2'<'col-md-6'i><'col-md-6 d-flex justify-content-md-end'f>>" +
+                "<'row'<'col-sm-12'tr>>",
+            language: {
+                search: "",
+                searchPlaceholder: "🔍 Search teams or conferences..."
+            },
+            // --- THE BULLETPROOF FIX ---
+            drawCallback: function(settings) {
+                let api = this.api();
+                // Grabs the physical HTML cells in their new sorted order and numbers them
+                api.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }
+        });
+
         })
         .catch(error => {
             console.error('Error loading data:', error);
-            $('#efficiencyTable').html('<p class="text-center text-danger p-3">Failed to load data from the server API.</p>');
+            $('#efficiencyTable').html('<p class="text-center text-danger p-3">Failed to load data.</p>');
         });
 });
 </script>

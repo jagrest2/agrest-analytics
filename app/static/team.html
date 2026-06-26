@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrest Analytics | Team Profile</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body { background-color: silver; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { background-color: #1e1e1e; border: 1px solid #2d2d2d; border-radius: 8px; }
+        .metric-value { font-size: 2rem; font-weight: bold; color: #0d6efd; }
+        .table-dark { background-color: #1e1e1e; --bs-table-bg: #1e1e1e; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <img class="logo" src="images/ChatGPT Image Jun 9, 2026, 02_05_22 PM.png" alt="Logo">
+        <a href="table.html">NCAAM</a>
+        <a href="index.html">Simulate</a>
+        <a href="about.html">About</a>
+    </div>
+
+    <div class="container py-5">
+        <div class="mb-4">
+            <a href="table.html" class="btn btn-outline-dark"><i class="fa-solid fa-arrow-left"></i> Back to Efficiencies</a>
+        </div>
+
+        <div class="card p-5 shadow-sm mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 id="profile-team-name" class="display-4 fw-bold text-white">Loading Team...</h1>
+                    <p id="profile-conference" class="text-muted fs-5 mb-0">Conference Loading...</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-muted uppercase small fw-bold">OVERALL RANK</div>
+                    <div id="profile-rank" class="display-3 fw-bold text-primary">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm text-center">
+                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-gauge-high text-success"></i> Net Rating</h3>
+                    <div class="my-3">
+                        <div class="text-muted small">Adjusted Efficiency</div>
+                        <div id="profile-adj-net" class="metric-value">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm text-center">
+                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-gauge-high text-success"></i> Offense</h3>
+                    <div class="my-3">
+                        <div class="text-muted small">Adjusted Efficiency</div>
+                        <div id="profile-adj-off" class="metric-value">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm text-center">
+                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shield-halved text-danger"></i> Defense</h3>
+                    <div class="my-3">
+                        <div class="text-muted small">Adjusted Efficiency</div>
+                        <div id="profile-adj-def" class="metric-value">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm text-center">
+                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shield-halved text-danger"></i> Possessions</h3>
+                    <div class="my-3">
+                        <div class="text-muted small">Adjusted Efficiency</div>
+                        <div id="profile-adj-poss" class="metric-value">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 shadow-sm">
+            <h2 class="text-white mb-4"><i class="fa-solid fa-users text-primary"></i> Player Value & Efficiency Roster</h2>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Player Name</th>
+                            <th class="text-center">Games</th>
+                            <th class="text-center">Off Possessions</th>
+                            <th class="text-center">ORtg</th>
+                            <th class="text-center">DRtg</th>
+                            <th class="text-center">Net Rating</th>
+                            <th class="text-center text-info">Points Over Avg</th>
+                        </tr>
+                    </thead>
+                    <tbody id="player-table-body">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Loading roster data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadTeamProfile() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamName = urlParams.get('name'); 
+
+            if (!teamName) {
+                document.getElementById('profile-team-name').innerText = "No team selected.";
+                return;
+            }
+
+            // 1. Fetch main team profile metrics from your API
+            try {
+                const response = await fetch(`/api/team-profile?name=${encodeURIComponent(teamName)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('profile-team-name').innerText = data.Team;
+                    document.getElementById('profile-conference').innerText = data.Conference || "Division I";
+                    document.getElementById('profile-rank').innerText = `#${data.Overall_Rank || '-'}`;
+                    document.getElementById('profile-adj-net').innerText = data.Net || '-';
+                    document.getElementById('profile-adj-off').innerText = data.Offensive || data.Offense || '-';
+                    document.getElementById('profile-adj-def').innerText = data.Defensive || data.Defense || '-';
+                    document.getElementById('profile-adj-poss').innerText = data.Possessions || '-';
+                }
+            } catch (error) {
+                console.error("Error loading team profile details:", error);
+                document.getElementById('profile-team-name').innerText = "Error loading team data.";
+            }
+
+            // 2. Fetch and filter roster data dynamically from your Express API route
+            try {
+                // FIXED PATH: Updated to request data from the API endpoint router layer
+                const playerRes = await fetch('/api/player-stats');
+                if (!playerRes.ok) throw new Error("Could not load player JSON database");
+                
+                const allPlayers = await playerRes.json();
+                const tbody = document.getElementById('player-table-body');
+                tbody.innerHTML = ''; 
+
+                const cleanUrlName = teamName.toLowerCase().trim();
+
+                const schoolPlayers = allPlayers.filter(p => {
+                    const csvTeam = (p.Assigned_Team || '').toLowerCase().trim();
+                    return csvTeam.includes(cleanUrlName) || cleanUrlName.includes(csvTeam);
+                });
+
+                if (schoolPlayers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No parsed players found for this school.</td></tr>`;
+                    return;
+                }
+
+                schoolPlayers.sort((a, b) => b.Points_Over_Average - a.Points_Over_Average);
+
+                schoolPlayers.forEach(p => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="fw-bold text-white">${p.Player}</td>
+                        <td class="text-center">${p.Games_Tracked}</td>
+                        <td class="text-center">${p.Season_Off_Possessions}</td>
+                        <td class="text-center">${p.Weighted_ORtg}</td>
+                        <td class="text-center">${p.Weighted_DRtg}</td>
+                        <td class="text-center fw-semibold ${p.Net_Efficiency_Rating >= 0 ? 'text-success' : 'text-danger'}">${p.Net_Efficiency_Rating}</td>
+                        <td class="text-center fw-bold text-info">${p.Points_Over_Average}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+            } catch (err) {
+                console.error("Error loading roster:", err);
+                document.getElementById('player-table-body').innerHTML = 
+                    `<tr><td colspan="7" class="text-center text-danger">Error fetching player roster database.</td></tr>`;
+            }
+        }
+
+        window.onload = loadTeamProfile;
+    </script>
+</body>
+</html>

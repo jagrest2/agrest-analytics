@@ -20,11 +20,18 @@
             <select id="home-team">
                 <option>Loading teams...</option>
             </select>
+            
+            <br>
 
             <label for="away-team">Away Team:</label>
             <select id="away-team">
                 <option>Loading teams...</option>
             </select>
+
+            <br>
+
+            <label for="numberOfSims">Number of Games:</label>
+            <input id="numberOfSims" type = "number" value = "1" min = "1" max = "500">
         </div>
 
         <div class="control-group" style="margin: 15px 0;">
@@ -32,8 +39,8 @@
             <label for="home-court-checkbox">Home Court Advantage?</label>
         </div>
 
-        <button type="button" onclick="runSimulation()">Run Matchup</button>
-        <button type="button" onclick="runBatchSimulation()">Run 100x Batch</button>
+        <button type="button" onclick="handleSims()">Run Matchup</button>
+        
 
         <div class="scoreboard">
             <h2 id="score-display">Select Teams to Begin</h2>
@@ -41,7 +48,7 @@
         </div>
             
             <div id="batch-container" style="display: none; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
-                <h3>100-Game Batch Results</h3>
+                <h3>Series Results</h3>
                 <div style="display: flex; justify-content: space-around; text-align: center;">
                     <div>
                         <p><strong>Home Wins</strong></p>
@@ -88,6 +95,21 @@
         }
 
         window.onload = loadTeams;
+
+        function handleSims() {
+            // Get the input element and convert its value to a number
+            const inputField = document.getElementById('numberOfSims');
+            const numberOfSims = parseInt(inputField.value, 10);
+
+            // 2. The Conditional Logic
+            if (numberOfSims === 1) {
+                runSimulation();
+            } else if (numberOfSims >= 2) {
+                runBatchSimulation(numberOfSims);
+            } else {
+                console.log("Please enter a number of 1 or greater.");
+            }
+        }
 
         async function runSimulation() {
             console.log("Starting Simulation...");
@@ -140,17 +162,21 @@
             const awaySelect = document.getElementById('away-team');
             const isHomeCourt = document.getElementById('home-court-checkbox').checked;
 
+            const simsInput = document.getElementById('numberOfSims');
+            // Default to 100 if the input is empty or invalid
+            const totalGames = simsInput && simsInput.value ? parseInt(simsInput.value, 10) : 100;
+
             const homeName = homeSelect.options[homeSelect.selectedIndex].text;
             const awayName = awaySelect.options[awaySelect.selectedIndex].text;
             const homeVal = homeSelect.value;
             const awayVal = awaySelect.value;
 
-            scoreHeader.innerText = "Running 100 Simulations...";
             batchContainer.style.display = 'none'; // Hide old batch results while loading
 
             try {
-                // Fetch from the /batch endpoint
-                const response = await fetch(`/batch?home=${encodeURIComponent(homeVal)}&away=${encodeURIComponent(awayVal)}&home_court=${isHomeCourt}`);
+                // --- 2. ADD THE GAMES PARAMETER TO THE FETCH URL ---
+                // Everything in one go
+                const response = await fetch(`/batch?home=${encodeURIComponent(homeVal)}&away=${encodeURIComponent(awayVal)}&home_court=${isHomeCourt}&games=${totalGames}`);
                 
                 if (!response.ok) throw new Error("Server error");
                 

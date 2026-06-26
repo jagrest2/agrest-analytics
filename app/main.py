@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -8,6 +8,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+import json
+from fastapi import HTTPException
 
 
 # Note: Make sure your "model.py" file is renamed to "simulation.py" 
@@ -71,8 +73,9 @@ def simulate(home: str, away: str, home_court: bool = False):
     }
 
 @app.get("/batch")
-def batch(home: str, away: str, home_court: bool = False, sims: int = 100):
-    results = simulation.batch(home, away, home_court, iterations=100)
+def batch(home: str, away: str, home_court: bool = False, games: int = 100):
+    print(f"--- SERVER RECEIVED GAMES: {games} ---") # <-- Add this
+    results = simulation.batch(home, away, home_court, iterations=games)
     return results
 
 @app.get("/")
@@ -83,6 +86,7 @@ def read_root():
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(CURRENT_DIR, "static")
 TABLE_HTML_PATH = os.path.join(STATIC_DIR, "table.html")
+TEAM_HTML_PATH = os.path.join(STATIC_DIR, "team.html")
 
 # 1. Your Data API Endpoint (The frontend JavaScript calls this)
 @app.get("/api/efficiencies")
@@ -106,5 +110,57 @@ async def serve_table_with_ext():
         return FileResponse(TABLE_HTML_PATH)
     return {"error": f"Could not find table.html at verified path: {TABLE_HTML_PATH}"}
 
-# 4. Mount the rest of the static folder for CSS/JS assets if you have them
+# --- TEAM PROFILE API ENDPOINT ---
+@app.get("/api/team-profile")
+async def get_team_profile(name: str):
+    try:
+        # Load the exact same file your efficiencies table uses
+        df = pd.read_csv("app/data/2026/output2.csv")
+        
+        # Search the 'Team' column for the requested name
+        team_row = df[df["Team"] == name]
+        
+        if team_row.empty:
+            return {"error": "Team not found"}
+            
+        # Convert that single matching row into a dictionary to send to JS
+        # .fillna("-") handles any blank CSV cells so JSON doesn't crash
+        team_data = team_row.fillna("-").iloc[0].to_dict()
+        
+        return team_data
+        
+    except Exception as e:
+        return {"error": f"Failed to load data: {str(e)}"}
+    
+
+@app.get("/api/player-stats")
+async def get_player_stats():
+    try:
+        # This calculates the exact folder main.py lives in
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(base_dir, "player_stats.json")
+        
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"File not found. Looked in: {file_path}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# --- ROUTE FALLBACK A: /team ---
+@app.get("/team")
+async def serve_team_no_ext():
+    if os.path.exists(TEAM_HTML_PATH):
+        return FileResponse(TEAM_HTML_PATH)
+    return {"error": f"Could not find team.html at verified path: {TEAM_HTML_PATH}"}
+
+# --- ROUTE FALLBACK B: /team.html ---
+@app.get("/team.html")
+async def serve_team_with_ext():
+    if os.path.exists(TEAM_HTML_PATH):
+        return FileResponse(TEAM_HTML_PATH)
+    return {"error": f"Could not find team.html at verified path: {TEAM_HTML_PATH}"}
+
+# ALWAYS AT BOTTOM
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
