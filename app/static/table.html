@@ -61,23 +61,27 @@
 <script>
     $(document).ready(function() {
     fetch('/api/efficiencies')
-        .then(response => response.json())
-        .then(rawData => {
-            console.log("MY TEAM DATA:", rawData[0]);
-            
-            if (!rawData || rawData.length === 0) {
-                $('#efficiencyTable').html('<p class="text-center text-danger p-3">No data records found.</p>');
-                return;
-            }
+    .then(response => response.json())
+    .then(rawData => {
+        console.log("MY TEAM DATA:", rawData[0]);
+        
+        if (!rawData || rawData.length === 0) {
+            $('#efficiencyTable').html('<p class="text-center text-danger p-3">No data records found.</p>');
+            return;
+        }
 
-            // 1. Map your standard CSV columns exactly as before
-            const columns = Object.keys(rawData[0]).map(key => {
-                return { 
-                    data: key, 
-                    title: key.replace(/_/g, ' ') 
-                };
-                // --- ADD THIS RENDERER FOR THE TEAM COLUMN ---
-                // If the data key matches your team name column (adjust "Team" if it's lowercased or called something else)
+        // --- FIX: Sort raw array by Net Rating (descending) BEFORE DataTables touches it ---
+        // Change "Net" to match your exact JSON property name (e.g., "Net_Rating" or "NetRating")
+        rawData.sort((a, b) => parseFloat(b.Net || 0) - parseFloat(a.Net || 0));
+
+        // 1. Map your standard CSV columns exactly as before
+        const columns = Object.keys(rawData[0]).map(key => {
+            let columnConfig = { 
+                data: key, 
+                title: key.replace(/_/g, ' ') 
+            };
+            // ... (rest of your column mapping logic)
+
                 if (key === "Team") {
                     columnConfig.render = function(data, type, row) {
                         if (type === 'display' && data) {
@@ -90,17 +94,13 @@
                 return columnConfig;
             });
 
-        // INJECT THE RANK COLUMN USING THE DISPLAY INDEX
+        // FIXED: Make Rank pull from the base data's row index so it sticks to the team
         columns.unshift({
-            data: "Overall_Rank",
+            data: null, // Change data to null since it's calculated on load
             title: "Rank",
-            orderable: false,
-            defaultContent: "",
+            orderable: true, // Allow users to sort back to overall rank
             render: function (data, type, row, meta) {
-                if (type === 'display') {
-                    // THE FIX: Search the display array to find the exact sorted position of this row
-                    return meta.settings.aiDisplay.indexOf(meta.row) + 1;
-                }
+                // meta.row is the immutable row index from the raw dataset array
                 return meta.row + 1;
             }
         });
@@ -112,9 +112,8 @@
 
             columnDefs: [
                 {
-                    targets: '_all', // Look at all columns
+                    targets: '_all', 
                     render: function(data, type, row, meta) {
-                        // If this column's header title is "Team", turn it into a link
                         if (meta.settings.aoColumns[meta.col].sTitle === "Team" && type === 'display' && data) {
                             return `<a href="/team?name=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd; display: inline-block;">${data}</a>`;
                         }
@@ -130,16 +129,9 @@
                 "<'row'<'col-sm-12'tr>>",
             language: {
                 search: "",
-                searchPlaceholder: "🔍 Search teams or conferences..."
-            },
-            // --- THE BULLETPROOF FIX ---
-            drawCallback: function(settings) {
-                let api = this.api();
-                // Grabs the physical HTML cells in their new sorted order and numbers them
-                api.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
-                    cell.innerHTML = i + 1;
-                });
+                searchPlaceholder: "🔍 Search teams"
             }
+            // REMOVED drawCallback: This completely stops the column from re-numbering on sorts!
         });
 
         })

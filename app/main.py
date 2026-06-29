@@ -36,7 +36,7 @@ app.mount("/static", StaticFiles(directory=static_path), name="static")
 @app.get("/teams")
 def get_teams():
     # FIX: Point to the exact directory where the CSV lives
-    df = pd.read_csv("app/data/2026/output.csv")
+    df = pd.read_csv("app/data/2026/output3.csv")
     
     # Clean up the data: drop empty rows and ensure everything is a string
     df = df.dropna(subset=['Team'])
@@ -91,7 +91,7 @@ TEAM_HTML_PATH = os.path.join(STATIC_DIR, "team.html")
 # 1. Your Data API Endpoint (The frontend JavaScript calls this)
 @app.get("/api/efficiencies")
 async def get_efficiencies():
-    df = pd.read_csv("app/data/2026/output2.csv")
+    df = pd.read_csv("app/data/2026/output3.csv")
     df = df.fillna(0)
     df = df[df["Possessions"] != 0]
     return df.to_dict(orient="records")
@@ -115,7 +115,7 @@ async def serve_table_with_ext():
 async def get_team_profile(name: str):
     try:
         # Load the exact same file your efficiencies table uses
-        df = pd.read_csv("app/data/2026/output2.csv")
+        df = pd.read_csv("app/data/2026/output3.csv")
         
         # Search the 'Team' column for the requested name
         team_row = df[df["Team"] == name]
@@ -138,7 +138,7 @@ async def get_player_stats():
     try:
         # This calculates the exact folder main.py lives in
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(base_dir, "player_stats.json")
+        file_path = os.path.join(base_dir, "player_stats4.json")
         
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)

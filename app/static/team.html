@@ -27,7 +27,7 @@
 
     <div class="container py-5">
         <div class="mb-4">
-            <a href="table.html" class="btn btn-outline-dark"><i class="fa-solid fa-arrow-left"></i> Back to Efficiencies</a>
+            <a href="table.html" class="btn btn-outline-dark"><i class="fa-solid fa-arrow-left"></i> Back to Table</a>
         </div>
 
         <div class="card p-5 shadow-sm mb-4">
@@ -44,7 +44,7 @@
         </div>
 
         <div class="row g-4 mb-5">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card p-4 shadow-sm text-center">
                     <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-gauge-high text-success"></i> Net Rating</h3>
                     <div class="my-3">
@@ -54,7 +54,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card p-4 shadow-sm text-center">
                     <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-gauge-high text-success"></i> Offense</h3>
                     <div class="my-3">
@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card p-4 shadow-sm text-center">
                     <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shield-halved text-danger"></i> Defense</h3>
                     <div class="my-3">
@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card p-4 shadow-sm text-center">
                     <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shield-halved text-danger"></i> Possessions</h3>
                     <div class="my-3">
@@ -92,17 +92,16 @@
                     <thead>
                         <tr>
                             <th>Player Name</th>
-                            <th class="text-center">Games</th>
-                            <th class="text-center">Off Possessions</th>
+                            <th>Games</th>
+                            <th>Total Possessions</th>
                             <th class="text-center">ORtg</th>
                             <th class="text-center">DRtg</th>
                             <th class="text-center">Net Rating</th>
-                            <th class="text-center text-info">Points Over Avg</th>
                         </tr>
                     </thead>
                     <tbody id="player-table-body">
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Loading roster data...</td>
+                            <td colspan="6" class="text-center text-muted">Loading roster data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -140,7 +139,6 @@
 
             // 2. Fetch and filter roster data dynamically from your Express API route
             try {
-                // FIXED PATH: Updated to request data from the API endpoint router layer
                 const playerRes = await fetch('/api/player-stats');
                 if (!playerRes.ok) throw new Error("Could not load player JSON database");
                 
@@ -148,38 +146,101 @@
                 const tbody = document.getElementById('player-table-body');
                 tbody.innerHTML = ''; 
 
-                const cleanUrlName = teamName.toLowerCase().trim();
-
+                const cleanUrlName = (teamName || '').toLowerCase().trim();
                 const schoolPlayers = allPlayers.filter(p => {
                     const csvTeam = (p.Assigned_Team || '').toLowerCase().trim();
-                    return csvTeam.includes(cleanUrlName) || cleanUrlName.includes(csvTeam);
+                    
+                    if (csvTeam === cleanUrlName) return true;
+                    
+                    const csvWords = csvTeam.split(' ');
+                    const urlWords = cleanUrlName.split(' ');
+                    
+                    if (csvWords.includes('state') && !urlWords.includes('state')) return false;
+                    if (csvWords.includes('tech') && !urlWords.includes('tech')) return false;
+                    
+                    if (csvWords.includes('eastern') && !urlWords.includes('eastern')) return false;
+                    if (csvWords.includes('western') && !urlWords.includes('western')) return false;
+                    if (csvWords.includes('southern') && !urlWords.includes('southern')) return false;
+                    if (csvWords.includes('northern') && !urlWords.includes('northern')) return false;
+                    if (csvWords.includes('central') && !urlWords.includes('central')) return false;
+                    if (csvWords.includes('george') && !urlWords.includes('george')) return false;
+
+                    const matchesAllWords = urlWords.every(word => csvWords.includes(word));
+                    return matchesAllWords;
                 });
 
                 if (schoolPlayers.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No parsed players found for this school.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No parsed players found for this school.</td></tr>`;
                     return;
                 }
 
-                schoolPlayers.sort((a, b) => b.Points_Over_Average - a.Points_Over_Average);
+                // --- NEW ARCHITECTURE: Split based on the 50 possession rule ---
+                const qualifiedPlayers = [];
+                const lowVolumePlayers = [];
 
                 schoolPlayers.forEach(p => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="fw-bold text-white">${p.Player}</td>
-                        <td class="text-center">${p.Games_Tracked}</td>
-                        <td class="text-center">${p.Season_Off_Possessions}</td>
-                        <td class="text-center">${p.Weighted_ORtg}</td>
-                        <td class="text-center">${p.Weighted_DRtg}</td>
-                        <td class="text-center fw-semibold ${p.Net_Efficiency_Rating >= 0 ? 'text-success' : 'text-danger'}">${p.Net_Efficiency_Rating}</td>
-                        <td class="text-center fw-bold text-info">${p.Points_Over_Average}</td>
-                    `;
-                    tbody.appendChild(row);
+                    const totalPossessions = parseFloat(p.Season_Off_Possessions || 0);
+                    if (totalPossessions >= 100) {
+                        qualifiedPlayers.push(p);
+                    } else {
+                        lowVolumePlayers.push(p);
+                    }
                 });
+
+                // Sort qualified rotation players by Contextual Net Value descending
+                qualifiedPlayers.sort((a, b) => parseFloat(b.Contextual_Net_Value || 0) - parseFloat(a.Contextual_Net_Value || 0));
+                
+                // Sort low volume bench warmers by possession volume descending to keep them structured
+                lowVolumePlayers.sort((a, b) => parseFloat(b.Season_Off_Possessions || 0) - parseFloat(a.Season_Off_Possessions || 0));
+
+                let tableHtml = '';
+
+                // Render primary qualified roster
+                qualifiedPlayers.forEach(p => {
+                    const netVal = parseFloat(p.Contextual_Net_Value || 0);
+                    tableHtml += `
+                        <tr>
+                            <td class="fw-bold text-white">${p.Player || 'Unknown'}</td>
+                            <td class="text-white">${p.Games_Tracked || 0}</td>
+                            <td class="text-white">${p.Season_Off_Possessions || 0}</td>
+                            <td class="text-center">${p.Weighted_ORtg || 0}</td>
+                            <td class="text-center">${p.Weighted_DRtg || 0}</td>
+                            <td class="text-center fw-semibold ${netVal >= 0 ? 'text-success' : 'text-danger'}">${p.Contextual_Net_Value || '0.0'}</td>
+                        </tr>
+                    `;
+                });
+
+                // Render "Not Enough Data" breakpoint block
+                if (lowVolumePlayers.length > 0) {
+                    tableHtml += `
+                        <tr class="table-dark fw-bold text-uppercase small" style="border-top: 3px double #444; background-color: #141414;">
+                            <td colspan="6" class="py-3 text-center text-muted" style="letter-spacing: 1px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> Not Enough Data (Under 50 Possessions)
+                            </td>
+                        </tr>
+                    `;
+
+                    lowVolumePlayers.forEach(p => {
+                        const netVal = parseFloat(p.Contextual_Net_Value || 0);
+                        tableHtml += `
+                            <tr class="opacity-50 text-muted" style="background-color: rgba(0,0,0,0.15);">
+                                <td>${p.Player || 'Unknown'}</td>
+                                <td>${p.Games_Tracked || 0}</td>
+                                <td>${p.Season_Off_Possessions || 0}</td>
+                                <td class="text-center">${p.Weighted_ORtg || 0}</td>
+                                <td class="text-center">${p.Weighted_DRtg || 0}</td>
+                                <td class="text-center fw-semibold ${netVal >= 0 ? 'text-success' : 'text-danger'}">${p.Contextual_Net_Value || '0.0'}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                tbody.innerHTML = tableHtml;
 
             } catch (err) {
                 console.error("Error loading roster:", err);
                 document.getElementById('player-table-body').innerHTML = 
-                    `<tr><td colspan="7" class="text-center text-danger">Error fetching player roster database.</td></tr>`;
+                    `<tr><td colspan="6" class="text-center text-danger">Error fetching player roster database.</td></tr>`;
             }
         }
 
