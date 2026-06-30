@@ -93,7 +93,7 @@
                         <tr>
                             <th>Player Name</th>
                             <th>Games</th>
-                            <th>Total Possessions</th>
+                            <th>PPG</th>
                             <th class="text-center">ORtg</th>
                             <th class="text-center">DRtg</th>
                             <th class="text-center">Net Rating</th>
@@ -202,7 +202,7 @@
                         <tr>
                             <td class="fw-bold text-white">${p.Player || 'Unknown'}</td>
                             <td class="text-white">${p.Games_Tracked || 0}</td>
-                            <td class="text-white">${p.Season_Off_Possessions || 0}</td>
+                            <td class="text-white">${p.Points_Per_Game || 0}</td>
                             <td class="text-center">${p.Weighted_ORtg || 0}</td>
                             <td class="text-center">${p.Weighted_DRtg || 0}</td>
                             <td class="text-center fw-semibold ${netVal >= 0 ? 'text-success' : 'text-danger'}">${p.Contextual_Net_Value || '0.0'}</td>
@@ -226,7 +226,7 @@
                             <tr class="opacity-50 text-muted" style="background-color: rgba(0,0,0,0.15);">
                                 <td>${p.Player || 'Unknown'}</td>
                                 <td>${p.Games_Tracked || 0}</td>
-                                <td>${p.Season_Off_Possessions || 0}</td>
+                                <td>${p.Points_Per_Game || 0}</td>
                                 <td class="text-center">${p.Weighted_ORtg || 0}</td>
                                 <td class="text-center">${p.Weighted_DRtg || 0}</td>
                                 <td class="text-center fw-semibold ${netVal >= 0 ? 'text-success' : 'text-danger'}">${p.Contextual_Net_Value || '0.0'}</td>
