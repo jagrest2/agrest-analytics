@@ -59,86 +59,106 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
     fetch('/api/efficiencies')
     .then(response => response.json())
     .then(rawData => {
-        console.log("MY TEAM DATA:", rawData[0]);
-        
-        if (!rawData || rawData.length === 0) {
-            $('#efficiencyTable').html('<p class="text-center text-danger p-3">No data records found.</p>');
+        if (!rawData?.length) {
+            $('#efficiencyTable').html('<p class=" text-ceter text-danger p-3">No data records found.</p>');
             return;
         }
 
-        // --- FIX: Sort raw array by Net Rating (descending) BEFORE DataTables touches it ---
-        // Change "Net" to match your exact JSON property name (e.g., "Net_Rating" or "NetRating")
+        // 1. Build rapid lookup map for stats
+        const teamLookup = {};
+        rawData.forEach(t => {
+            if (t.Team) {
+                teamLookup[t.Team] = {
+                    Net: parseFloat(t.Net || 0),
+                    Off: parseFloat(t.Offensive || t.OffEff || t.Off || 0),
+                    Def: parseFloat(t.Defensive || t.DefEff || t.Def || 0)
+                };
+            }
+        });
+
+        // 2. Calculate SOS Metrics (Returns 0.00 if names do not match database)
+        rawData.forEach(t => {
+            let totalNet = 0, totalOff = 0, totalDef = 0, count = 0;
+
+            (t.Opponents || []).forEach(oppName => {
+                const opp = teamLookup[oppName];
+                if (opp) { 
+                    totalNet += opp.Net;
+                    totalOff += opp.Off;
+                    totalDef += opp.Def;
+                    count++;
+                }
+            });
+
+            // Diagnostic indicator: outputs 0.00 if matchups or names are broken
+            t.Net_SOS = count > 0 ? (totalNet / count).toFixed(2) : "0.00";
+            t.Off_SOS = count > 0 ? (totalOff / count).toFixed(2) : "0.00";
+            t.Def_SOS = count > 0 ? (totalDef / count).toFixed(2) : "0.00";
+        });
+
+        // 3. Pre-sort array by Net Rating descending
         rawData.sort((a, b) => parseFloat(b.Net || 0) - parseFloat(a.Net || 0));
 
-        // 1. Map your standard CSV columns exactly as before
-        const columns = Object.keys(rawData[0]).map(key => {
-            let columnConfig = { 
-                data: key, 
-                title: key.replace(/_/g, ' ') 
-            };
-            // ... (rest of your column mapping logic)
+        // 4. Map Table Columns dynamically
+        // 4. Map Table Columns dynamically (Updated for Clickable Conferences)
+        // 4. Map Table Columns dynamically (Updated for Links & Strict 2-Decimal Display)
+        const columns = Object.keys(rawData[0])
+            .filter(key => key !== 'Opponents')
+            .map(key => {
+                let customRender = undefined;
 
                 if (key === "Team") {
-                    columnConfig.render = function(data, type, row) {
-                        if (type === 'display' && data) {
-                            return `<a href="/team?name=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd;">${data}</a>`;
+                    customRender = (data, type) => 
+                        (type === 'display' && data) ? `<a href="/team?name=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd;">${data}</a>` : data;
+                } 
+                else if (key === "Conference") {
+                    customRender = (data, type) => 
+                        (type === 'display' && data) ? `<a href="conference.html?conf=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd;">${data}</a>` : data;
+                } 
+                else {
+                    // This forces every other column (Net, Off, Def, Possessions) to 2 decimals safely
+                    customRender = (data, type) => {
+                        if (type === 'display' && data !== undefined && data !== null && !isNaN(data)) {
+                            return parseFloat(data).toFixed(2);
                         }
-                        return data;
+                        return data; // Keeps raw floats behind the scenes so sorting doesn't break!
                     };
                 }
 
-                return columnConfig;
+                return {
+                    data: key,
+                    title: key.replace(/_/g, ' '),
+                    render: customRender
+                };
             });
 
-        // FIXED: Make Rank pull from the base data's row index so it sticks to the team
+        // Insert Rank column at index 0
         columns.unshift({
-            data: null, // Change data to null since it's calculated on load
+            data: null,
             title: "Rank",
-            orderable: true, // Allow users to sort back to overall rank
-            render: function (data, type, row, meta) {
-                // meta.row is the immutable row index from the raw dataset array
-                return meta.row + 1;
-            }
+            render: (data, type, row, meta) => meta.row + 1
         });
 
-        // 2. Initialize the high-density engine
-        const table = $('#efficiencyTable').DataTable({
+        // 5. Initialize DataTables engine
+        $('#efficiencyTable').DataTable({
             data: rawData,
             columns: columns,
-
-            columnDefs: [
-                {
-                    targets: '_all', 
-                    render: function(data, type, row, meta) {
-                        if (meta.settings.aoColumns[meta.col].sTitle === "Team" && type === 'display' && data) {
-                            return `<a href="/team?name=${encodeURIComponent(data)}" class="text-decoration-none fw-bold" style="color: #0d6efd; display: inline-block;">${data}</a>`;
-                        }
-                        return data;
-                    }
-                }
-            ],
             paging: false,                 
             scrollCollapse: true,   
             responsive: true,
-            order: [[2, 'desc']], // Keeps sorting automatically by your Net column
-            dom: "<'row mb-2'<'col-md-6'i><'col-md-6 d-flex justify-content-md-end'f>>" +
-                "<'row'<'col-sm-12'tr>>",
-            language: {
-                search: "",
-                searchPlaceholder: "🔍 Search teams"
-            }
-            // REMOVED drawCallback: This completely stops the column from re-numbering on sorts!
+            order: [[3, 'desc']], 
+            dom: "<'row mb-2'<'col-md-6'i><'col-md-6 d-flex justify-content-md-end'f>><'row'<'col-sm-12'tr>>",
+            language: { search: "", searchPlaceholder: "🔍 Search teams" }
         });
-
-        })
-        .catch(error => {
-            console.error('Error loading data:', error);
-            $('#efficiencyTable').html('<p class="text-center text-danger p-3">Failed to load data.</p>');
-        });
+    })
+    .catch(err => {
+        console.error('Error loading data:', err);
+        $('#efficiencyTable').html('<p class="text-center text-danger p-3">Failed to load data.</p>');
+    });
 });
 </script>
 </body>

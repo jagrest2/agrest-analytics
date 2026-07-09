@@ -1,0 +1,2512 @@
+{
+    "A10": {
+        "conferenceName": "A10",
+        "rank": 9,
+        "avgNet": 7.75,
+        "bestTeam": "Saint Louis",
+        "bestOffense": "Saint Louis",
+        "bestDefense": "Saint Louis",
+        "teams": [
+            {
+                "name": "Saint Louis",
+                "net": 27.48,
+                "off": 123.16,
+                "def": 95.68
+            },
+            {
+                "name": "VCU",
+                "net": 18.62,
+                "off": 119.33,
+                "def": 100.71
+            },
+            {
+                "name": "Dayton",
+                "net": 13.09,
+                "off": 111.65,
+                "def": 98.56
+            },
+            {
+                "name": "George Washington",
+                "net": 13.01,
+                "off": 116.89,
+                "def": 103.88
+            },
+            {
+                "name": "Davidson",
+                "net": 10.76,
+                "off": 112.21,
+                "def": 101.45
+            },
+            {
+                "name": "George Mason",
+                "net": 9.84,
+                "off": 113.67,
+                "def": 103.83
+            },
+            {
+                "name": "Duquesne",
+                "net": 6.87,
+                "off": 111.84,
+                "def": 104.97
+            },
+            {
+                "name": "St. Joseph's",
+                "net": 6.71,
+                "off": 107.78,
+                "def": 101.07
+            },
+            {
+                "name": "Fordham",
+                "net": 5.36,
+                "off": 105.27,
+                "def": 99.91
+            },
+            {
+                "name": "St. Bonaventure",
+                "net": 4.81,
+                "off": 113.41,
+                "def": 108.6
+            },
+            {
+                "name": "Richmond",
+                "net": 3.98,
+                "off": 111.32,
+                "def": 107.34
+            },
+            {
+                "name": "Rhode Island",
+                "net": 2.61,
+                "off": 105.06,
+                "def": 102.45
+            },
+            {
+                "name": "La Salle",
+                "net": -5.26,
+                "off": 103.35,
+                "def": 108.61
+            },
+            {
+                "name": "Loyola Chicago",
+                "net": -9.43,
+                "off": 102.98,
+                "def": 112.41
+            }
+        ]
+    },
+    "ACC": {
+        "conferenceName": "ACC",
+        "rank": 4,
+        "avgNet": 20.36,
+        "bestTeam": "Duke",
+        "bestOffense": "Duke",
+        "bestDefense": "Duke",
+        "teams": [
+            {
+                "name": "Duke",
+                "net": 45.27,
+                "off": 132.49,
+                "def": 87.22
+            },
+            {
+                "name": "Louisville",
+                "net": 32.03,
+                "off": 127.02,
+                "def": 94.99
+            },
+            {
+                "name": "Virginia",
+                "net": 30.77,
+                "off": 126.33,
+                "def": 95.56
+            },
+            {
+                "name": "North Carolina",
+                "net": 27.54,
+                "off": 123.86,
+                "def": 96.32
+            },
+            {
+                "name": "NC State",
+                "net": 25.7,
+                "off": 126.68,
+                "def": 100.98
+            },
+            {
+                "name": "Miami (FL)",
+                "net": 25.45,
+                "off": 123.53,
+                "def": 98.08
+            },
+            {
+                "name": "SMU",
+                "net": 24.77,
+                "off": 126.66,
+                "def": 101.89
+            },
+            {
+                "name": "Clemson",
+                "net": 23.87,
+                "off": 119.34,
+                "def": 95.47
+            },
+            {
+                "name": "Virginia Tech",
+                "net": 18.22,
+                "off": 119.29,
+                "def": 101.07
+            },
+            {
+                "name": "Stanford",
+                "net": 17.61,
+                "off": 118.3,
+                "def": 100.69
+            },
+            {
+                "name": "Wake Forest",
+                "net": 17.41,
+                "off": 119.82,
+                "def": 102.41
+            },
+            {
+                "name": "California",
+                "net": 16.42,
+                "off": 116.67,
+                "def": 100.25
+            },
+            {
+                "name": "Florida State",
+                "net": 16.27,
+                "off": 118.43,
+                "def": 102.16
+            },
+            {
+                "name": "Syracuse",
+                "net": 13.92,
+                "off": 114.96,
+                "def": 101.04
+            },
+            {
+                "name": "Notre Dame",
+                "net": 12.19,
+                "off": 116.59,
+                "def": 104.4
+            },
+            {
+                "name": "Pittsburgh",
+                "net": 10.93,
+                "off": 114.82,
+                "def": 103.89
+            },
+            {
+                "name": "Boston College",
+                "net": 4.23,
+                "off": 104.4,
+                "def": 100.17
+            },
+            {
+                "name": "Georgia Tech",
+                "net": 3.81,
+                "off": 106.97,
+                "def": 103.16
+            }
+        ]
+    },
+    "ASUN": {
+        "conferenceName": "ASUN",
+        "rank": 25,
+        "avgNet": -8.19,
+        "bestTeam": "Jacksonville State",
+        "bestOffense": "Bellarmine",
+        "bestDefense": "Jacksonville State",
+        "teams": [
+            {
+                "name": "Jacksonville State",
+                "net": 2.1,
+                "off": 105.96,
+                "def": 103.86
+            },
+            {
+                "name": "Austin Peay",
+                "net": 1.21,
+                "off": 109.35,
+                "def": 108.14
+            },
+            {
+                "name": "Central Arkansas",
+                "net": 0.94,
+                "off": 109.87,
+                "def": 108.93
+            },
+            {
+                "name": "Lipscomb",
+                "net": -1.58,
+                "off": 108.25,
+                "def": 109.83
+            },
+            {
+                "name": "Queens (NC)",
+                "net": -5.0,
+                "off": 115.17,
+                "def": 120.17
+            },
+            {
+                "name": "FGCU",
+                "net": -5.78,
+                "off": 106.9,
+                "def": 112.68
+            },
+            {
+                "name": "Jacksonville",
+                "net": -8.61,
+                "off": 105.76,
+                "def": 114.37
+            },
+            {
+                "name": "Eastern Kentucky",
+                "net": -10.22,
+                "off": 109.32,
+                "def": 119.54
+            },
+            {
+                "name": "Bellarmine",
+                "net": -11.44,
+                "off": 115.2,
+                "def": 126.64
+            },
+            {
+                "name": "West Georgia",
+                "net": -13.16,
+                "off": 103.0,
+                "def": 116.16
+            },
+            {
+                "name": "Stetson",
+                "net": -15.51,
+                "off": 103.98,
+                "def": 119.49
+            },
+            {
+                "name": "North Florida",
+                "net": -17.65,
+                "off": 106.6,
+                "def": 124.25
+            },
+            {
+                "name": "North Alabama",
+                "net": -21.73,
+                "off": 99.98,
+                "def": 121.71
+            }
+        ]
+    },
+    "America East": {
+        "conferenceName": "America East",
+        "rank": 30,
+        "avgNet": -16.63,
+        "bestTeam": "UMBC",
+        "bestOffense": "Vermont",
+        "bestDefense": "UMBC",
+        "teams": [
+            {
+                "name": "UMBC",
+                "net": -3.6,
+                "off": 104.34,
+                "def": 107.94
+            },
+            {
+                "name": "Vermont",
+                "net": -7.41,
+                "off": 104.49,
+                "def": 111.9
+            },
+            {
+                "name": "Albany",
+                "net": -13.49,
+                "off": 102.05,
+                "def": 115.54
+            },
+            {
+                "name": "UMASS Lowell",
+                "net": -14.58,
+                "off": 101.67,
+                "def": 116.25
+            },
+            {
+                "name": "New Hampshire",
+                "net": -18.55,
+                "off": 94.54,
+                "def": 113.09
+            },
+            {
+                "name": "NJIT",
+                "net": -20.11,
+                "off": 92.84,
+                "def": 112.95
+            },
+            {
+                "name": "Maine",
+                "net": -21.01,
+                "off": 89.85,
+                "def": 110.86
+            },
+            {
+                "name": "Bryant",
+                "net": -23.55,
+                "off": 92.96,
+                "def": 116.51
+            },
+            {
+                "name": "Binghamton",
+                "net": -27.35,
+                "off": 94.32,
+                "def": 121.67
+            }
+        ]
+    },
+    "American": {
+        "conferenceName": "American",
+        "rank": 11,
+        "avgNet": 4.6,
+        "bestTeam": "South Florida",
+        "bestOffense": "Tulsa",
+        "bestDefense": "North Texas",
+        "teams": [
+            {
+                "name": "South Florida",
+                "net": 20.32,
+                "off": 119.79,
+                "def": 99.47
+            },
+            {
+                "name": "Tulsa",
+                "net": 19.34,
+                "off": 122.76,
+                "def": 103.42
+            },
+            {
+                "name": "Wichita State",
+                "net": 14.93,
+                "off": 115.32,
+                "def": 100.39
+            },
+            {
+                "name": "FAU",
+                "net": 8.71,
+                "off": 111.85,
+                "def": 103.14
+            },
+            {
+                "name": "UAB",
+                "net": 7.32,
+                "off": 110.38,
+                "def": 103.06
+            },
+            {
+                "name": "North Texas",
+                "net": 6.43,
+                "off": 104.89,
+                "def": 98.46
+            },
+            {
+                "name": "Memphis",
+                "net": 5.05,
+                "off": 108.06,
+                "def": 103.01
+            },
+            {
+                "name": "Temple",
+                "net": 3.65,
+                "off": 111.64,
+                "def": 107.99
+            },
+            {
+                "name": "Charlotte",
+                "net": 0.62,
+                "off": 112.72,
+                "def": 112.1
+            },
+            {
+                "name": "Rice",
+                "net": -0.76,
+                "off": 108.35,
+                "def": 109.11
+            },
+            {
+                "name": "Tulane",
+                "net": -3.1,
+                "off": 106.06,
+                "def": 109.16
+            },
+            {
+                "name": "East Carolina",
+                "net": -8.12,
+                "off": 102.16,
+                "def": 110.28
+            },
+            {
+                "name": "UTSA",
+                "net": -14.56,
+                "off": 99.65,
+                "def": 114.21
+            }
+        ]
+    },
+    "Big 12": {
+        "conferenceName": "Big 12",
+        "rank": 2,
+        "avgNet": 23.87,
+        "bestTeam": "Arizona",
+        "bestOffense": "Arizona",
+        "bestDefense": "Arizona",
+        "teams": [
+            {
+                "name": "Arizona",
+                "net": 43.09,
+                "off": 131.25,
+                "def": 88.16
+            },
+            {
+                "name": "Houston",
+                "net": 38.18,
+                "off": 126.98,
+                "def": 88.8
+            },
+            {
+                "name": "Iowa State",
+                "net": 37.95,
+                "off": 127.5,
+                "def": 89.55
+            },
+            {
+                "name": "Texas Tech",
+                "net": 31.55,
+                "off": 128.79,
+                "def": 97.24
+            },
+            {
+                "name": "BYU",
+                "net": 29.57,
+                "off": 127.81,
+                "def": 98.24
+            },
+            {
+                "name": "Kansas",
+                "net": 29.05,
+                "off": 119.71,
+                "def": 90.66
+            },
+            {
+                "name": "Baylor",
+                "net": 24.56,
+                "off": 125.96,
+                "def": 101.4
+            },
+            {
+                "name": "TCU",
+                "net": 22.17,
+                "off": 117.83,
+                "def": 95.66
+            },
+            {
+                "name": "Cincinnati",
+                "net": 20.73,
+                "off": 111.95,
+                "def": 91.22
+            },
+            {
+                "name": "UCF",
+                "net": 19.36,
+                "off": 121.52,
+                "def": 102.16
+            },
+            {
+                "name": "West Virginia",
+                "net": 18.62,
+                "off": 113.98,
+                "def": 95.36
+            },
+            {
+                "name": "Colorado",
+                "net": 16.48,
+                "off": 120.92,
+                "def": 104.44
+            },
+            {
+                "name": "Arizona State",
+                "net": 15.41,
+                "off": 117.15,
+                "def": 101.74
+            },
+            {
+                "name": "Oklahoma State",
+                "net": 14.84,
+                "off": 119.1,
+                "def": 104.26
+            },
+            {
+                "name": "Kansas State",
+                "net": 12.11,
+                "off": 115.27,
+                "def": 103.16
+            },
+            {
+                "name": "Utah",
+                "net": 8.17,
+                "off": 116.13,
+                "def": 107.96
+            }
+        ]
+    },
+    "Big East": {
+        "conferenceName": "Big East",
+        "rank": 5,
+        "avgNet": 18.4,
+        "bestTeam": "Connecticut",
+        "bestOffense": "Connecticut",
+        "bestDefense": "Connecticut",
+        "teams": [
+            {
+                "name": "Connecticut",
+                "net": 34.22,
+                "off": 124.99,
+                "def": 90.77
+            },
+            {
+                "name": "St. John's",
+                "net": 32.08,
+                "off": 122.99,
+                "def": 90.91
+            },
+            {
+                "name": "Villanova",
+                "net": 23.48,
+                "off": 122.34,
+                "def": 98.86
+            },
+            {
+                "name": "Seton Hall",
+                "net": 18.38,
+                "off": 111.42,
+                "def": 93.04
+            },
+            {
+                "name": "Providence",
+                "net": 16.26,
+                "off": 122.3,
+                "def": 106.04
+            },
+            {
+                "name": "Butler",
+                "net": 15.09,
+                "off": 118.02,
+                "def": 102.93
+            },
+            {
+                "name": "Creighton",
+                "net": 14.9,
+                "off": 116.59,
+                "def": 101.69
+            },
+            {
+                "name": "Georgetown",
+                "net": 13.12,
+                "off": 114.74,
+                "def": 101.62
+            },
+            {
+                "name": "Marquette",
+                "net": 13.03,
+                "off": 112.93,
+                "def": 99.9
+            },
+            {
+                "name": "Xavier",
+                "net": 12.04,
+                "off": 116.73,
+                "def": 104.69
+            },
+            {
+                "name": "DePaul",
+                "net": 9.75,
+                "off": 108.1,
+                "def": 98.35
+            }
+        ]
+    },
+    "Big Sky": {
+        "conferenceName": "Big Sky",
+        "rank": 14,
+        "avgNet": 0.13,
+        "bestTeam": "Montana State",
+        "bestOffense": "Northern Colorado",
+        "bestDefense": "Portland State",
+        "teams": [
+            {
+                "name": "Montana State",
+                "net": 8.18,
+                "off": 113.68,
+                "def": 105.5
+            },
+            {
+                "name": "Idaho",
+                "net": 5.06,
+                "off": 110.45,
+                "def": 105.39
+            },
+            {
+                "name": "Northern Colorado",
+                "net": 4.72,
+                "off": 114.09,
+                "def": 109.37
+            },
+            {
+                "name": "Portland State",
+                "net": 4.68,
+                "off": 107.0,
+                "def": 102.32
+            },
+            {
+                "name": "Montana",
+                "net": 2.06,
+                "off": 107.7,
+                "def": 105.64
+            },
+            {
+                "name": "Weber State",
+                "net": 1.01,
+                "off": 111.32,
+                "def": 110.31
+            },
+            {
+                "name": "Idaho State",
+                "net": -3.83,
+                "off": 110.28,
+                "def": 114.11
+            },
+            {
+                "name": "Eastern Washington",
+                "net": -4.1,
+                "off": 110.81,
+                "def": 114.91
+            },
+            {
+                "name": "Sacramento State",
+                "net": -6.6,
+                "off": 105.75,
+                "def": 112.35
+            },
+            {
+                "name": "Northern Arizona",
+                "net": -9.9,
+                "off": 106.05,
+                "def": 115.95
+            }
+        ]
+    },
+    "Big South": {
+        "conferenceName": "Big South",
+        "rank": 21,
+        "avgNet": -4.81,
+        "bestTeam": "High Point",
+        "bestOffense": "High Point",
+        "bestDefense": "High Point",
+        "teams": [
+            {
+                "name": "High Point",
+                "net": 16.01,
+                "off": 118.56,
+                "def": 102.55
+            },
+            {
+                "name": "Winthrop",
+                "net": 4.87,
+                "off": 112.23,
+                "def": 107.36
+            },
+            {
+                "name": "Charleston Southern",
+                "net": -5.02,
+                "off": 105.25,
+                "def": 110.27
+            },
+            {
+                "name": "UNC Asheville",
+                "net": -5.14,
+                "off": 104.54,
+                "def": 109.68
+            },
+            {
+                "name": "Longwood",
+                "net": -5.5,
+                "off": 102.66,
+                "def": 108.16
+            },
+            {
+                "name": "Radford",
+                "net": -5.75,
+                "off": 106.19,
+                "def": 111.94
+            },
+            {
+                "name": "Presbyterian",
+                "net": -7.06,
+                "off": 103.53,
+                "def": 110.59
+            },
+            {
+                "name": "USC Upstate",
+                "net": -8.44,
+                "off": 99.87,
+                "def": 108.31
+            },
+            {
+                "name": "Gardner Webb",
+                "net": -27.29,
+                "off": 94.7,
+                "def": 121.99
+            }
+        ]
+    },
+    "Big Ten": {
+        "conferenceName": "Big Ten",
+        "rank": 3,
+        "avgNet": 23.76,
+        "bestTeam": "Michigan",
+        "bestOffense": "Purdue",
+        "bestDefense": "Michigan",
+        "teams": [
+            {
+                "name": "Michigan",
+                "net": 46.02,
+                "off": 133.6,
+                "def": 87.58
+            },
+            {
+                "name": "Illinois",
+                "net": 40.18,
+                "off": 135.14,
+                "def": 94.96
+            },
+            {
+                "name": "Purdue",
+                "net": 38.25,
+                "off": 136.16,
+                "def": 97.91
+            },
+            {
+                "name": "Michigan State",
+                "net": 33.82,
+                "off": 126.82,
+                "def": 93.0
+            },
+            {
+                "name": "Nebraska",
+                "net": 32.0,
+                "off": 123.0,
+                "def": 91.0
+            },
+            {
+                "name": "Iowa",
+                "net": 29.67,
+                "off": 127.12,
+                "def": 97.45
+            },
+            {
+                "name": "Ohio State",
+                "net": 28.22,
+                "off": 127.62,
+                "def": 99.4
+            },
+            {
+                "name": "Wisconsin",
+                "net": 27.78,
+                "off": 127.98,
+                "def": 100.2
+            },
+            {
+                "name": "UCLA",
+                "net": 26.53,
+                "off": 125.09,
+                "def": 98.56
+            },
+            {
+                "name": "Indiana",
+                "net": 24.75,
+                "off": 124.23,
+                "def": 99.48
+            },
+            {
+                "name": "Washington",
+                "net": 19.78,
+                "off": 119.69,
+                "def": 99.91
+            },
+            {
+                "name": "Northwestern",
+                "net": 19.02,
+                "off": 120.3,
+                "def": 101.28
+            },
+            {
+                "name": "USC",
+                "net": 16.57,
+                "off": 116.37,
+                "def": 99.8
+            },
+            {
+                "name": "Minnesota",
+                "net": 15.09,
+                "off": 116.0,
+                "def": 100.91
+            },
+            {
+                "name": "Oregon",
+                "net": 11.55,
+                "off": 114.02,
+                "def": 102.47
+            },
+            {
+                "name": "Penn State",
+                "net": 6.29,
+                "off": 116.31,
+                "def": 110.02
+            },
+            {
+                "name": "Maryland",
+                "net": 6.28,
+                "off": 111.99,
+                "def": 105.71
+            },
+            {
+                "name": "Rutgers",
+                "net": 5.91,
+                "off": 110.82,
+                "def": 104.91
+            }
+        ]
+    },
+    "Big West": {
+        "conferenceName": "Big West",
+        "rank": 15,
+        "avgNet": -0.28,
+        "bestTeam": "UC Irvine",
+        "bestOffense": "UC Santa Barbara",
+        "bestDefense": "UC Irvine",
+        "teams": [
+            {
+                "name": "UC Irvine",
+                "net": 9.33,
+                "off": 105.53,
+                "def": 96.2
+            },
+            {
+                "name": "Hawaii",
+                "net": 8.07,
+                "off": 107.06,
+                "def": 98.99
+            },
+            {
+                "name": "UC San Diego",
+                "net": 4.67,
+                "off": 106.79,
+                "def": 102.12
+            },
+            {
+                "name": "UC Santa Barbara",
+                "net": 4.48,
+                "off": 111.86,
+                "def": 107.38
+            },
+            {
+                "name": "Cal State Fullerton",
+                "net": 2.05,
+                "off": 109.02,
+                "def": 106.97
+            },
+            {
+                "name": "UC Davis",
+                "net": 1.55,
+                "off": 106.21,
+                "def": 104.66
+            },
+            {
+                "name": "Cal State Northridge",
+                "net": -1.01,
+                "off": 105.73,
+                "def": 106.74
+            },
+            {
+                "name": "Long Beach State",
+                "net": -3.83,
+                "off": 103.86,
+                "def": 107.69
+            },
+            {
+                "name": "Cal Poly",
+                "net": -5.04,
+                "off": 106.6,
+                "def": 111.64
+            },
+            {
+                "name": "UC Riverside",
+                "net": -8.1,
+                "off": 102.55,
+                "def": 110.65
+            },
+            {
+                "name": "Cal State Bakersfield",
+                "net": -15.3,
+                "off": 98.83,
+                "def": 114.13
+            }
+        ]
+    },
+    "CAA": {
+        "conferenceName": "CAA",
+        "rank": 18,
+        "avgNet": -2.04,
+        "bestTeam": "Hofstra",
+        "bestOffense": "Hofstra",
+        "bestDefense": "Hofstra",
+        "teams": [
+            {
+                "name": "Hofstra",
+                "net": 10.29,
+                "off": 112.5,
+                "def": 102.21
+            },
+            {
+                "name": "UNC Wilmington",
+                "net": 5.96,
+                "off": 110.71,
+                "def": 104.75
+            },
+            {
+                "name": "William & Mary",
+                "net": 3.81,
+                "off": 110.71,
+                "def": 106.9
+            },
+            {
+                "name": "Towson",
+                "net": 2.31,
+                "off": 105.44,
+                "def": 103.13
+            },
+            {
+                "name": "Campbell",
+                "net": 1.16,
+                "off": 111.32,
+                "def": 110.16
+            },
+            {
+                "name": "Monmouth",
+                "net": -0.94,
+                "off": 104.6,
+                "def": 105.54
+            },
+            {
+                "name": "College of Charleston",
+                "net": -1.54,
+                "off": 106.91,
+                "def": 108.45
+            },
+            {
+                "name": "Elon",
+                "net": -3.98,
+                "off": 110.85,
+                "def": 114.83
+            },
+            {
+                "name": "Drexel",
+                "net": -5.14,
+                "off": 100.41,
+                "def": 105.55
+            },
+            {
+                "name": "Stony Brook",
+                "net": -5.47,
+                "off": 102.71,
+                "def": 108.18
+            },
+            {
+                "name": "Hampton",
+                "net": -7.78,
+                "off": 101.08,
+                "def": 108.86
+            },
+            {
+                "name": "North Carolina A&T",
+                "net": -11.27,
+                "off": 103.81,
+                "def": 115.08
+            },
+            {
+                "name": "Northeastern",
+                "net": -13.96,
+                "off": 104.59,
+                "def": 118.55
+            }
+        ]
+    },
+    "CUSA": {
+        "conferenceName": "CUSA",
+        "rank": 12,
+        "avgNet": 2.3,
+        "bestTeam": "Sam Houston St",
+        "bestOffense": "Liberty",
+        "bestDefense": "Louisiana Tech",
+        "teams": [
+            {
+                "name": "Sam Houston St",
+                "net": 9.97,
+                "off": 115.46,
+                "def": 105.49
+            },
+            {
+                "name": "Liberty",
+                "net": 9.57,
+                "off": 118.23,
+                "def": 108.66
+            },
+            {
+                "name": "Kennesaw State",
+                "net": 7.99,
+                "off": 112.92,
+                "def": 104.93
+            },
+            {
+                "name": "MTSU",
+                "net": 5.66,
+                "off": 110.51,
+                "def": 104.85
+            },
+            {
+                "name": "Florida International",
+                "net": 3.32,
+                "off": 109.32,
+                "def": 106.0
+            },
+            {
+                "name": "Western Kentucky",
+                "net": 3.16,
+                "off": 109.94,
+                "def": 106.78
+            },
+            {
+                "name": "New Mexico State",
+                "net": 2.26,
+                "off": 107.83,
+                "def": 105.57
+            },
+            {
+                "name": "Louisiana Tech",
+                "net": 2.01,
+                "off": 103.29,
+                "def": 101.28
+            },
+            {
+                "name": "Missouri State",
+                "net": 0.04,
+                "off": 109.45,
+                "def": 109.41
+            },
+            {
+                "name": "UTEP",
+                "net": -5.57,
+                "off": 102.05,
+                "def": 107.62
+            },
+            {
+                "name": "Delaware",
+                "net": -13.1,
+                "off": 101.63,
+                "def": 114.73
+            }
+        ]
+    },
+    "Horizon": {
+        "conferenceName": "Horizon",
+        "rank": 20,
+        "avgNet": -3.87,
+        "bestTeam": "Wright State",
+        "bestOffense": "Oakland",
+        "bestDefense": "Youngstown St",
+        "teams": [
+            {
+                "name": "Wright State",
+                "net": 4.23,
+                "off": 113.47,
+                "def": 109.24
+            },
+            {
+                "name": "Robert Morris",
+                "net": 1.47,
+                "off": 111.13,
+                "def": 109.66
+            },
+            {
+                "name": "Northern Kentucky",
+                "net": 0.68,
+                "off": 111.23,
+                "def": 110.55
+            },
+            {
+                "name": "Oakland",
+                "net": 0.0,
+                "off": 115.08,
+                "def": 115.08
+            },
+            {
+                "name": "Youngstown St",
+                "net": -0.07,
+                "off": 108.82,
+                "def": 108.89
+            },
+            {
+                "name": "IPFW",
+                "net": -3.57,
+                "off": 108.72,
+                "def": 112.29
+            },
+            {
+                "name": "Green Bay",
+                "net": -5.52,
+                "off": 111.22,
+                "def": 116.74
+            },
+            {
+                "name": "Detroit Mercy",
+                "net": -5.6,
+                "off": 107.53,
+                "def": 113.13
+            },
+            {
+                "name": "Milwaukee",
+                "net": -7.75,
+                "off": 108.29,
+                "def": 116.04
+            },
+            {
+                "name": "IU Indy",
+                "net": -13.1,
+                "off": 105.97,
+                "def": 119.07
+            },
+            {
+                "name": "Cleveland State",
+                "net": -13.3,
+                "off": 109.32,
+                "def": 122.62
+            }
+        ]
+    },
+    "Ivy League": {
+        "conferenceName": "Ivy League",
+        "rank": 16,
+        "avgNet": -0.5,
+        "bestTeam": "Yale",
+        "bestOffense": "Cornell",
+        "bestDefense": "Harvard",
+        "teams": [
+            {
+                "name": "Yale",
+                "net": 11.86,
+                "off": 119.62,
+                "def": 107.76
+            },
+            {
+                "name": "Cornell",
+                "net": 3.26,
+                "off": 119.62,
+                "def": 116.36
+            },
+            {
+                "name": "Pennsylvania",
+                "net": 1.35,
+                "off": 108.16,
+                "def": 106.81
+            },
+            {
+                "name": "Columbia",
+                "net": 0.74,
+                "off": 109.06,
+                "def": 108.32
+            },
+            {
+                "name": "Harvard",
+                "net": -0.34,
+                "off": 105.26,
+                "def": 105.6
+            },
+            {
+                "name": "Dartmouth",
+                "net": -6.28,
+                "off": 105.73,
+                "def": 112.01
+            },
+            {
+                "name": "Brown",
+                "net": -7.06,
+                "off": 98.99,
+                "def": 106.05
+            },
+            {
+                "name": "Princeton",
+                "net": -7.52,
+                "off": 103.97,
+                "def": 111.49
+            }
+        ]
+    },
+    "MAAC": {
+        "conferenceName": "MAAC",
+        "rank": 28,
+        "avgNet": -12.47,
+        "bestTeam": "Marist",
+        "bestOffense": "Sacred Heart",
+        "bestDefense": "Marist",
+        "teams": [
+            {
+                "name": "Marist",
+                "net": -1.91,
+                "off": 98.73,
+                "def": 100.64
+            },
+            {
+                "name": "Siena",
+                "net": -4.52,
+                "off": 103.23,
+                "def": 107.75
+            },
+            {
+                "name": "Quinnipiac",
+                "net": -5.86,
+                "off": 101.41,
+                "def": 107.27
+            },
+            {
+                "name": "Merrimack",
+                "net": -6.2,
+                "off": 101.65,
+                "def": 107.85
+            },
+            {
+                "name": "Saint Peter's",
+                "net": -6.82,
+                "off": 101.27,
+                "def": 108.09
+            },
+            {
+                "name": "Fairfield",
+                "net": -8.19,
+                "off": 103.28,
+                "def": 111.47
+            },
+            {
+                "name": "Iona",
+                "net": -10.08,
+                "off": 100.26,
+                "def": 110.34
+            },
+            {
+                "name": "Mount St. Mary's",
+                "net": -13.13,
+                "off": 95.21,
+                "def": 108.34
+            },
+            {
+                "name": "Sacred Heart",
+                "net": -14.53,
+                "off": 103.39,
+                "def": 117.92
+            },
+            {
+                "name": "Manhattan",
+                "net": -18.87,
+                "off": 101.38,
+                "def": 120.25
+            },
+            {
+                "name": "Canisius",
+                "net": -22.42,
+                "off": 92.05,
+                "def": 114.47
+            },
+            {
+                "name": "Niagara",
+                "net": -23.31,
+                "off": 95.26,
+                "def": 118.57
+            },
+            {
+                "name": "Rider",
+                "net": -26.24,
+                "off": 92.98,
+                "def": 119.22
+            }
+        ]
+    },
+    "MAC": {
+        "conferenceName": "MAC",
+        "rank": 17,
+        "avgNet": -1.51,
+        "bestTeam": "Akron",
+        "bestOffense": "Akron",
+        "bestDefense": "Bowling Green",
+        "teams": [
+            {
+                "name": "Akron",
+                "net": 15.0,
+                "off": 120.33,
+                "def": 105.33
+            },
+            {
+                "name": "Miami (OH)",
+                "net": 13.66,
+                "off": 119.98,
+                "def": 106.32
+            },
+            {
+                "name": "Bowling Green",
+                "net": 6.85,
+                "off": 109.12,
+                "def": 102.27
+            },
+            {
+                "name": "Toledo",
+                "net": 3.74,
+                "off": 114.65,
+                "def": 110.91
+            },
+            {
+                "name": "Kent State",
+                "net": 2.35,
+                "off": 111.86,
+                "def": 109.51
+            },
+            {
+                "name": "Massachusetts",
+                "net": -2.02,
+                "off": 107.45,
+                "def": 109.47
+            },
+            {
+                "name": "Buffalo",
+                "net": -2.87,
+                "off": 112.07,
+                "def": 114.94
+            },
+            {
+                "name": "Ohio",
+                "net": -4.11,
+                "off": 108.17,
+                "def": 112.28
+            },
+            {
+                "name": "Eastern Michigan",
+                "net": -5.56,
+                "off": 101.73,
+                "def": 107.29
+            },
+            {
+                "name": "Central Michigan",
+                "net": -8.69,
+                "off": 104.17,
+                "def": 112.86
+            },
+            {
+                "name": "Ball State",
+                "net": -9.8,
+                "off": 98.36,
+                "def": 108.16
+            },
+            {
+                "name": "Western Michigan",
+                "net": -11.44,
+                "off": 104.64,
+                "def": 116.08
+            },
+            {
+                "name": "Northern Illinois",
+                "net": -16.74,
+                "off": 97.43,
+                "def": 114.17
+            }
+        ]
+    },
+    "MEAC": {
+        "conferenceName": "MEAC",
+        "rank": 32,
+        "avgNet": -20.42,
+        "bestTeam": "Howard",
+        "bestOffense": "Howard",
+        "bestDefense": "Howard",
+        "teams": [
+            {
+                "name": "Howard",
+                "net": -2.04,
+                "off": 103.2,
+                "def": 105.24
+            },
+            {
+                "name": "Norfolk State",
+                "net": -11.47,
+                "off": 101.21,
+                "def": 112.68
+            },
+            {
+                "name": "North Carolina Central",
+                "net": -16.95,
+                "off": 99.19,
+                "def": 116.14
+            },
+            {
+                "name": "Morgan State",
+                "net": -20.7,
+                "off": 97.02,
+                "def": 117.72
+            },
+            {
+                "name": "UMES",
+                "net": -22.42,
+                "off": 91.25,
+                "def": 113.67
+            },
+            {
+                "name": "South Carolina State",
+                "net": -28.26,
+                "off": 90.29,
+                "def": 118.55
+            },
+            {
+                "name": "Delaware State",
+                "net": -28.81,
+                "off": 84.31,
+                "def": 113.12
+            },
+            {
+                "name": "Coppin State",
+                "net": -32.71,
+                "off": 88.93,
+                "def": 121.64
+            }
+        ]
+    },
+    "MVC": {
+        "conferenceName": "MVC",
+        "rank": 10,
+        "avgNet": 5.09,
+        "bestTeam": "Northern Iowa",
+        "bestOffense": "Belmont",
+        "bestDefense": "Northern Iowa",
+        "teams": [
+            {
+                "name": "Northern Iowa",
+                "net": 14.71,
+                "off": 109.8,
+                "def": 95.09
+            },
+            {
+                "name": "Belmont",
+                "net": 13.27,
+                "off": 117.74,
+                "def": 104.47
+            },
+            {
+                "name": "Illinois State",
+                "net": 10.67,
+                "off": 111.38,
+                "def": 100.71
+            },
+            {
+                "name": "Illinois-Chicago",
+                "net": 7.49,
+                "off": 110.65,
+                "def": 103.16
+            },
+            {
+                "name": "Bradley",
+                "net": 6.15,
+                "off": 110.99,
+                "def": 104.84
+            },
+            {
+                "name": "Southern Illinois",
+                "net": 5.74,
+                "off": 103.8,
+                "def": 98.06
+            },
+            {
+                "name": "Murray State",
+                "net": 5.14,
+                "off": 115.56,
+                "def": 110.42
+            },
+            {
+                "name": "Drake",
+                "net": 1.98,
+                "off": 110.31,
+                "def": 108.33
+            },
+            {
+                "name": "Valparaiso",
+                "net": 1.64,
+                "off": 107.03,
+                "def": 105.39
+            },
+            {
+                "name": "Indiana State",
+                "net": -1.49,
+                "off": 104.62,
+                "def": 106.11
+            },
+            {
+                "name": "Evansville",
+                "net": -9.34,
+                "off": 100.64,
+                "def": 109.98
+            }
+        ]
+    },
+    "MWC": {
+        "conferenceName": "MWC",
+        "rank": 6,
+        "avgNet": 11.72,
+        "bestTeam": "Utah State",
+        "bestOffense": "Utah State",
+        "bestDefense": "San Diego State",
+        "teams": [
+            {
+                "name": "Utah State",
+                "net": 28.14,
+                "off": 125.92,
+                "def": 97.78
+            },
+            {
+                "name": "New Mexico",
+                "net": 21.76,
+                "off": 118.63,
+                "def": 96.87
+            },
+            {
+                "name": "San Diego State",
+                "net": 21.64,
+                "off": 116.44,
+                "def": 94.8
+            },
+            {
+                "name": "Boise State",
+                "net": 17.73,
+                "off": 119.51,
+                "def": 101.78
+            },
+            {
+                "name": "Grand Canyon",
+                "net": 15.26,
+                "off": 111.91,
+                "def": 96.65
+            },
+            {
+                "name": "Nevada",
+                "net": 15.08,
+                "off": 116.72,
+                "def": 101.64
+            },
+            {
+                "name": "Colorado State",
+                "net": 14.88,
+                "off": 121.07,
+                "def": 106.19
+            },
+            {
+                "name": "Wyoming",
+                "net": 11.3,
+                "off": 116.29,
+                "def": 104.99
+            },
+            {
+                "name": "UNLV",
+                "net": 9.67,
+                "off": 115.0,
+                "def": 105.33
+            },
+            {
+                "name": "Fresno State",
+                "net": 6.3,
+                "off": 108.04,
+                "def": 101.74
+            },
+            {
+                "name": "San Jose State",
+                "net": -0.31,
+                "off": 113.26,
+                "def": 113.57
+            },
+            {
+                "name": "Air Force",
+                "net": -20.78,
+                "off": 94.1,
+                "def": 114.88
+            }
+        ]
+    },
+    "NEC": {
+        "conferenceName": "NEC",
+        "rank": 29,
+        "avgNet": -14.24,
+        "bestTeam": "LIU",
+        "bestOffense": "Central Connecticut State",
+        "bestDefense": "Stonehill",
+        "teams": [
+            {
+                "name": "LIU",
+                "net": -6.61,
+                "off": 102.78,
+                "def": 109.39
+            },
+            {
+                "name": "Mercyhurst",
+                "net": -9.49,
+                "off": 98.83,
+                "def": 108.32
+            },
+            {
+                "name": "Central Connecticut State",
+                "net": -10.57,
+                "off": 103.78,
+                "def": 114.35
+            },
+            {
+                "name": "New Haven",
+                "net": -12.79,
+                "off": 95.8,
+                "def": 108.59
+            },
+            {
+                "name": "Wagner",
+                "net": -12.85,
+                "off": 99.39,
+                "def": 112.24
+            },
+            {
+                "name": "Le Moyne",
+                "net": -14.01,
+                "off": 98.27,
+                "def": 112.28
+            },
+            {
+                "name": "FDU",
+                "net": -15.17,
+                "off": 98.6,
+                "def": 113.77
+            },
+            {
+                "name": "Stonehill",
+                "net": -16.11,
+                "off": 91.14,
+                "def": 107.25
+            },
+            {
+                "name": "Saint Francis (PA)",
+                "net": -22.03,
+                "off": 97.21,
+                "def": 119.24
+            },
+            {
+                "name": "Chicago State",
+                "net": -22.73,
+                "off": 96.06,
+                "def": 118.79
+            }
+        ]
+    },
+    "OVC": {
+        "conferenceName": "OVC",
+        "rank": 26,
+        "avgNet": -11.4,
+        "bestTeam": "UT Martin",
+        "bestOffense": "Morehead State",
+        "bestDefense": "UT Martin",
+        "teams": [
+            {
+                "name": "UT Martin",
+                "net": -2.25,
+                "off": 97.5,
+                "def": 99.75
+            },
+            {
+                "name": "Tennessee State",
+                "net": -2.94,
+                "off": 105.12,
+                "def": 108.06
+            },
+            {
+                "name": "Lindenwood",
+                "net": -4.98,
+                "off": 99.32,
+                "def": 104.3
+            },
+            {
+                "name": "SIUE",
+                "net": -5.64,
+                "off": 98.05,
+                "def": 103.69
+            },
+            {
+                "name": "Southeast Missouri State",
+                "net": -5.92,
+                "off": 99.48,
+                "def": 105.4
+            },
+            {
+                "name": "Morehead State",
+                "net": -10.12,
+                "off": 105.27,
+                "def": 115.39
+            },
+            {
+                "name": "Eastern Illinois",
+                "net": -13.21,
+                "off": 95.47,
+                "def": 108.68
+            },
+            {
+                "name": "Tennessee Tech",
+                "net": -13.28,
+                "off": 99.61,
+                "def": 112.89
+            },
+            {
+                "name": "Little Rock",
+                "net": -16.69,
+                "off": 97.4,
+                "def": 114.09
+            },
+            {
+                "name": "Southern Indiana",
+                "net": -20.94,
+                "off": 92.46,
+                "def": 113.4
+            },
+            {
+                "name": "Western Illinois",
+                "net": -29.42,
+                "off": 90.8,
+                "def": 120.22
+            }
+        ]
+    },
+    "Patriot": {
+        "conferenceName": "Patriot",
+        "rank": 27,
+        "avgNet": -12.16,
+        "bestTeam": "Navy",
+        "bestOffense": "Boston University",
+        "bestDefense": "Navy",
+        "teams": [
+            {
+                "name": "Navy",
+                "net": 2.38,
+                "off": 106.05,
+                "def": 103.67
+            },
+            {
+                "name": "Colgate",
+                "net": -4.44,
+                "off": 108.05,
+                "def": 112.49
+            },
+            {
+                "name": "American",
+                "net": -5.4,
+                "off": 105.38,
+                "def": 110.78
+            },
+            {
+                "name": "Boston University",
+                "net": -11.23,
+                "off": 108.59,
+                "def": 119.82
+            },
+            {
+                "name": "Lehigh",
+                "net": -11.92,
+                "off": 99.97,
+                "def": 111.89
+            },
+            {
+                "name": "Loyola Maryland",
+                "net": -16.21,
+                "off": 101.41,
+                "def": 117.62
+            },
+            {
+                "name": "Lafayette",
+                "net": -16.87,
+                "off": 98.3,
+                "def": 115.17
+            },
+            {
+                "name": "Army",
+                "net": -17.79,
+                "off": 99.7,
+                "def": 117.49
+            },
+            {
+                "name": "Holy Cross",
+                "net": -18.33,
+                "off": 98.12,
+                "def": 116.45
+            },
+            {
+                "name": "Bucknell",
+                "net": -21.79,
+                "off": 95.53,
+                "def": 117.32
+            }
+        ]
+    },
+    "SEC": {
+        "conferenceName": "SEC",
+        "rank": 1,
+        "avgNet": 24.54,
+        "bestTeam": "Florida",
+        "bestOffense": "Alabama",
+        "bestDefense": "Florida",
+        "teams": [
+            {
+                "name": "Florida",
+                "net": 40.36,
+                "off": 131.26,
+                "def": 90.9
+            },
+            {
+                "name": "Alabama",
+                "net": 34.11,
+                "off": 134.01,
+                "def": 99.9
+            },
+            {
+                "name": "Vanderbilt",
+                "net": 32.68,
+                "off": 130.25,
+                "def": 97.57
+            },
+            {
+                "name": "Tennessee",
+                "net": 32.25,
+                "off": 125.66,
+                "def": 93.41
+            },
+            {
+                "name": "Arkansas",
+                "net": 32.17,
+                "off": 132.66,
+                "def": 100.49
+            },
+            {
+                "name": "Kentucky",
+                "net": 27.88,
+                "off": 125.07,
+                "def": 97.19
+            },
+            {
+                "name": "Texas",
+                "net": 26.89,
+                "off": 128.63,
+                "def": 101.74
+            },
+            {
+                "name": "Georgia",
+                "net": 25.89,
+                "off": 126.58,
+                "def": 100.69
+            },
+            {
+                "name": "Auburn",
+                "net": 25.79,
+                "off": 129.2,
+                "def": 103.41
+            },
+            {
+                "name": "Texas A&M",
+                "net": 22.36,
+                "off": 123.63,
+                "def": 101.27
+            },
+            {
+                "name": "Oklahoma",
+                "net": 21.45,
+                "off": 126.47,
+                "def": 105.02
+            },
+            {
+                "name": "Missouri",
+                "net": 17.35,
+                "off": 121.18,
+                "def": 103.83
+            },
+            {
+                "name": "LSU",
+                "net": 17.17,
+                "off": 122.1,
+                "def": 104.93
+            },
+            {
+                "name": "Mississippi",
+                "net": 15.46,
+                "off": 117.08,
+                "def": 101.62
+            },
+            {
+                "name": "South Carolina",
+                "net": 10.69,
+                "off": 115.38,
+                "def": 104.69
+            },
+            {
+                "name": "Mississippi State",
+                "net": 10.09,
+                "off": 115.09,
+                "def": 105.0
+            }
+        ]
+    },
+    "SWAC": {
+        "conferenceName": "SWAC",
+        "rank": 31,
+        "avgNet": -18.52,
+        "bestTeam": "Southern",
+        "bestOffense": "Southern",
+        "bestDefense": "Grambling",
+        "teams": [
+            {
+                "name": "Southern",
+                "net": -7.79,
+                "off": 103.57,
+                "def": 111.36
+            },
+            {
+                "name": "Prairie View A&M",
+                "net": -10.95,
+                "off": 99.19,
+                "def": 110.14
+            },
+            {
+                "name": "Bethune-Cookman",
+                "net": -11.49,
+                "off": 100.09,
+                "def": 111.58
+            },
+            {
+                "name": "Grambling",
+                "net": -13.42,
+                "off": 93.8,
+                "def": 107.22
+            },
+            {
+                "name": "Arkansas-Pine Bluff",
+                "net": -15.73,
+                "off": 101.22,
+                "def": 116.95
+            },
+            {
+                "name": "Texas Southern",
+                "net": -16.18,
+                "off": 97.74,
+                "def": 113.92
+            },
+            {
+                "name": "Alabama A&M",
+                "net": -16.21,
+                "off": 98.21,
+                "def": 114.42
+            },
+            {
+                "name": "Alabama State",
+                "net": -16.81,
+                "off": 96.28,
+                "def": 113.09
+            },
+            {
+                "name": "Florida A&M",
+                "net": -18.53,
+                "off": 93.6,
+                "def": 112.13
+            },
+            {
+                "name": "Jackson State",
+                "net": -28.03,
+                "off": 93.96,
+                "def": 121.99
+            },
+            {
+                "name": "Alcorn State",
+                "net": -28.39,
+                "off": 91.76,
+                "def": 120.15
+            },
+            {
+                "name": "Mississippi Valley State",
+                "net": -38.68,
+                "off": 85.9,
+                "def": 124.58
+            }
+        ]
+    },
+    "SoCon": {
+        "conferenceName": "SoCon",
+        "rank": 24,
+        "avgNet": -7.44,
+        "bestTeam": "ETSU",
+        "bestOffense": "Mercer",
+        "bestDefense": "ETSU",
+        "teams": [
+            {
+                "name": "ETSU",
+                "net": 2.21,
+                "off": 109.74,
+                "def": 107.53
+            },
+            {
+                "name": "Mercer",
+                "net": 2.07,
+                "off": 112.38,
+                "def": 110.31
+            },
+            {
+                "name": "Furman",
+                "net": 0.01,
+                "off": 109.06,
+                "def": 109.05
+            },
+            {
+                "name": "Samford",
+                "net": -4.21,
+                "off": 108.66,
+                "def": 112.87
+            },
+            {
+                "name": "Western Carolina",
+                "net": -4.86,
+                "off": 109.35,
+                "def": 114.21
+            },
+            {
+                "name": "Chattanooga",
+                "net": -7.55,
+                "off": 107.76,
+                "def": 115.31
+            },
+            {
+                "name": "Wofford",
+                "net": -9.08,
+                "off": 109.44,
+                "def": 118.52
+            },
+            {
+                "name": "UNC Greensboro",
+                "net": -11.84,
+                "off": 108.09,
+                "def": 119.93
+            },
+            {
+                "name": "The Citadel",
+                "net": -20.26,
+                "off": 101.63,
+                "def": 121.89
+            },
+            {
+                "name": "VMI",
+                "net": -20.87,
+                "off": 100.54,
+                "def": 121.41
+            }
+        ]
+    },
+    "Southland": {
+        "conferenceName": "Southland",
+        "rank": 19,
+        "avgNet": -2.53,
+        "bestTeam": "McNeese St",
+        "bestOffense": "McNeese St",
+        "bestDefense": "McNeese St",
+        "teams": [
+            {
+                "name": "McNeese St",
+                "net": 17.04,
+                "off": 116.25,
+                "def": 99.21
+            },
+            {
+                "name": "Stephen F. Austin",
+                "net": 8.59,
+                "off": 110.93,
+                "def": 102.34
+            },
+            {
+                "name": "UTRGV",
+                "net": 6.41,
+                "off": 110.98,
+                "def": 104.57
+            },
+            {
+                "name": "Texas A&M CC",
+                "net": 4.74,
+                "off": 104.76,
+                "def": 100.02
+            },
+            {
+                "name": "Incarnate Word",
+                "net": -4.23,
+                "off": 109.46,
+                "def": 113.69
+            },
+            {
+                "name": "Lamar",
+                "net": -4.35,
+                "off": 102.21,
+                "def": 106.56
+            },
+            {
+                "name": "New Orleans",
+                "net": -6.31,
+                "off": 105.28,
+                "def": 111.59
+            },
+            {
+                "name": "Nicholls State",
+                "net": -7.34,
+                "off": 103.5,
+                "def": 110.84
+            },
+            {
+                "name": "East Texas A&M",
+                "net": -9.12,
+                "off": 99.85,
+                "def": 108.97
+            },
+            {
+                "name": "Northwestern St",
+                "net": -10.51,
+                "off": 101.47,
+                "def": 111.98
+            },
+            {
+                "name": "Southeastern Louisiana",
+                "net": -12.44,
+                "off": 96.4,
+                "def": 108.84
+            },
+            {
+                "name": "Houston Christian",
+                "net": -12.82,
+                "off": 100.09,
+                "def": 112.91
+            }
+        ]
+    },
+    "Summit League": {
+        "conferenceName": "Summit League",
+        "rank": 22,
+        "avgNet": -5.16,
+        "bestTeam": "St. Thomas",
+        "bestOffense": "Denver",
+        "bestDefense": "North Dakota State",
+        "teams": [
+            {
+                "name": "St. Thomas",
+                "net": 7.04,
+                "off": 112.74,
+                "def": 105.7
+            },
+            {
+                "name": "North Dakota State",
+                "net": 6.6,
+                "off": 111.15,
+                "def": 104.55
+            },
+            {
+                "name": "South Dakota State",
+                "net": -0.75,
+                "off": 108.35,
+                "def": 109.1
+            },
+            {
+                "name": "Denver",
+                "net": -4.3,
+                "off": 117.02,
+                "def": 121.32
+            },
+            {
+                "name": "Omaha",
+                "net": -6.34,
+                "off": 107.34,
+                "def": 113.68
+            },
+            {
+                "name": "North Dakota",
+                "net": -6.57,
+                "off": 106.41,
+                "def": 112.98
+            },
+            {
+                "name": "South Dakota",
+                "net": -9.14,
+                "off": 105.83,
+                "def": 114.97
+            },
+            {
+                "name": "Oral Roberts",
+                "net": -9.97,
+                "off": 102.34,
+                "def": 112.31
+            },
+            {
+                "name": "Kansas City",
+                "net": -23.05,
+                "off": 94.74,
+                "def": 117.79
+            }
+        ]
+    },
+    "Sun Belt": {
+        "conferenceName": "Sun Belt",
+        "rank": 23,
+        "avgNet": -6.77,
+        "bestTeam": "Troy",
+        "bestOffense": "Marshall",
+        "bestDefense": "Appalachian State",
+        "teams": [
+            {
+                "name": "Troy",
+                "net": 3.41,
+                "off": 109.85,
+                "def": 106.44
+            },
+            {
+                "name": "Appalachian State",
+                "net": 0.95,
+                "off": 106.64,
+                "def": 105.69
+            },
+            {
+                "name": "Arkansas State",
+                "net": 0.48,
+                "off": 109.33,
+                "def": 108.85
+            },
+            {
+                "name": "South Alabama",
+                "net": -1.27,
+                "off": 106.37,
+                "def": 107.64
+            },
+            {
+                "name": "Marshall",
+                "net": -2.0,
+                "off": 111.42,
+                "def": 113.42
+            },
+            {
+                "name": "Texas State",
+                "net": -4.94,
+                "off": 103.01,
+                "def": 107.95
+            },
+            {
+                "name": "Southern Miss",
+                "net": -5.74,
+                "off": 102.61,
+                "def": 108.35
+            },
+            {
+                "name": "Coastal Carolina",
+                "net": -6.69,
+                "off": 100.14,
+                "def": 106.83
+            },
+            {
+                "name": "Georgia Southern",
+                "net": -6.79,
+                "off": 108.03,
+                "def": 114.82
+            },
+            {
+                "name": "James Madison",
+                "net": -7.39,
+                "off": 106.24,
+                "def": 113.63
+            },
+            {
+                "name": "Old Dominion",
+                "net": -9.74,
+                "off": 103.8,
+                "def": 113.54
+            },
+            {
+                "name": "Georgia State",
+                "net": -12.8,
+                "off": 98.05,
+                "def": 110.85
+            },
+            {
+                "name": "Louisiana",
+                "net": -18.5,
+                "off": 95.74,
+                "def": 114.24
+            },
+            {
+                "name": "Louisiana-Monroe",
+                "net": -23.75,
+                "off": 97.51,
+                "def": 121.26
+            }
+        ]
+    },
+    "WAC": {
+        "conferenceName": "WAC",
+        "rank": 13,
+        "avgNet": 1.52,
+        "bestTeam": "Utah Valley",
+        "bestOffense": "Utah Valley",
+        "bestDefense": "Utah Valley",
+        "teams": [
+            {
+                "name": "Utah Valley",
+                "net": 13.6,
+                "off": 112.08,
+                "def": 98.48
+            },
+            {
+                "name": "California Baptist",
+                "net": 4.74,
+                "off": 105.06,
+                "def": 100.32
+            },
+            {
+                "name": "UT Arlington",
+                "net": 2.44,
+                "off": 101.51,
+                "def": 99.07
+            },
+            {
+                "name": "Utah Tech",
+                "net": 1.81,
+                "off": 108.32,
+                "def": 106.51
+            },
+            {
+                "name": "Tarleton State",
+                "net": -1.56,
+                "off": 101.64,
+                "def": 103.2
+            },
+            {
+                "name": "Abilene Christian",
+                "net": -4.9,
+                "off": 100.16,
+                "def": 105.06
+            },
+            {
+                "name": "Southern Utah",
+                "net": -5.47,
+                "off": 105.09,
+                "def": 110.56
+            }
+        ]
+    },
+    "WCC": {
+        "conferenceName": "WCC",
+        "rank": 7,
+        "avgNet": 10.05,
+        "bestTeam": "Seattle",
+        "bestOffense": "Seattle",
+        "bestDefense": "Seattle",
+        "teams": [
+            {
+                "name": "Seattle",
+                "net": 10.05,
+                "off": 105.46,
+                "def": 95.41
+            }
+        ]
+    },
+    "West Coast": {
+        "conferenceName": "West Coast",
+        "rank": 8,
+        "avgNet": 9.59,
+        "bestTeam": "Gonzaga",
+        "bestOffense": "Gonzaga",
+        "bestDefense": "Gonzaga",
+        "teams": [
+            {
+                "name": "Gonzaga",
+                "net": 34.69,
+                "off": 124.73,
+                "def": 90.04
+            },
+            {
+                "name": "Saint Mary's",
+                "net": 28.75,
+                "off": 121.86,
+                "def": 93.11
+            },
+            {
+                "name": "Santa Clara",
+                "net": 21.26,
+                "off": 122.4,
+                "def": 101.14
+            },
+            {
+                "name": "Pacific",
+                "net": 10.15,
+                "off": 112.09,
+                "def": 101.94
+            },
+            {
+                "name": "San Francisco",
+                "net": 8.43,
+                "off": 113.58,
+                "def": 105.15
+            },
+            {
+                "name": "Washington State",
+                "net": 5.74,
+                "off": 113.82,
+                "def": 108.08
+            },
+            {
+                "name": "Loyola Marymount",
+                "net": 4.01,
+                "off": 107.41,
+                "def": 103.4
+            },
+            {
+                "name": "Oregon State",
+                "net": 0.68,
+                "off": 108.33,
+                "def": 107.65
+            },
+            {
+                "name": "San Diego",
+                "net": -1.12,
+                "off": 108.06,
+                "def": 109.18
+            },
+            {
+                "name": "Portland",
+                "net": -1.2,
+                "off": 107.05,
+                "def": 108.25
+            },
+            {
+                "name": "Pepperdine",
+                "net": -5.9,
+                "off": 105.32,
+                "def": 111.22
+            }
+        ]
+    }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conference Profile | Agrest Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased">
+
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="table.html" class="text-xl font-bold tracking-wider text-indigo-400">AGREST ANALYTICS</a>
+            <a href="table.html" class="text-sm bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition text-gray-300">← Back to Main Dashboard</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <div id="error-box" class="hidden bg-red-900/50 border border-red-500 text-red-200 p-4 rounded-lg mb-6 text-center">
+            Could not locate conference profile data. Ensure query param is valid or refresh data.
+        </div>
+
+        <div class="mb-10">
+            <h1 id="conf-title" class="text-4xl font-extrabold tracking-tight text-white mb-2">Loading Conference...</h1>
+            <p class="text-gray-400 text-lg">Division I Conference Analytics Profile</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+            <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Net Power Rank</p>
+                <p id="stat-rank" class="text-2xl font-bold text-indigo-400 mt-1">--</p>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Avg Net Rating</p>
+                <p id="stat-avg-net" class="text-2xl font-bold text-emerald-400 mt-1">--</p>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Best Overall Team</p>
+                <p id="stat-best-team" class="text-md font-bold text-white mt-2 truncate">--</p>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top Offense</p>
+                <p id="stat-best-off" class="text-md font-bold text-orange-400 mt-2 truncate">--</p>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-sm">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top Defense</p>
+                <p id="stat-best-def" class="text-md font-bold text-blue-400 mt-2 truncate">--</p>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden shadow">
+            <div class="px-6 py-4 border-b border-gray-700 bg-gray-800/50">
+                <h3 class="text-lg font-medium leading-6 text-white">Conference Breakdown</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700 text-left text-sm">
+                    <thead class="bg-gray-700/50 text-gray-300 font-semibold uppercase tracking-wider text-xs">
+                        <tr>
+                            <th class="px-6 py-3">Team Name</th>
+                            <th class="px-6 py-3 text-right">Net Rating</th>
+                            <th class="px-6 py-3 text-right">Off. Efficiency</th>
+                            <th class="px-6 py-3 text-right">Def. Efficiency</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teams-table-body" class="divide-y divide-gray-700 text-gray-300">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            // 1. Isolate the targets via URL string parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedConf = urlParams.get('conf');
+
+            if (!selectedConf) {
+                document.getElementById('error-box').classList.remove('hidden');
+                document.getElementById('conf-title').textContent = "No Conference Specified";
+                return;
+            }
+
+            try {
+                // 2. Fetch data via the secure FastAPI wrapper endpoint
+                const response = await fetch('/api/conferences');
+                const data = await response.json();
+                
+                const confData = data[selectedConf];
+
+                if (!confData) {
+                    document.getElementById('error-box').classList.remove('hidden');
+                    document.getElementById('conf-title').textContent = "Conference Not Found";
+                    return;
+                }
+
+                // 3. Populate Header & Card Elements
+                document.getElementById('conf-title').textContent = confData.conferenceName;
+                document.getElementById('stat-rank').textContent = `#${confData.rank}`;
+                document.getElementById('stat-avg-net').textContent = confData.avgNet > 0 ? `+${confData.avgNet}` : confData.avgNet;
+                document.getElementById('stat-best-team').textContent = confData.bestTeam;
+                document.getElementById('stat-best-off').textContent = confData.bestOffense;
+                document.getElementById('stat-best-def').textContent = confData.bestDefense;
+
+                // 4. Build and Render Team Table Loop
+                const tableBody = document.getElementById('teams-table-body');
+                tableBody.innerHTML = ''; // Wipe dummy state
+
+                confData.teams.forEach(team => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-700/30 transition";
+                    row.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-white">
+                            <a href="team?name=${encodeURIComponent(team.name)}" class="hover:text-indigo-400 hover:underline transition">
+                                ${team.name}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-right font-semibold text-emerald-400">${team.net > 0 ? '+' : ''}${team.net}</td>
+                        <td class="px-6 py-4 text-right text-orange-400">${team.off}</td>
+                        <td class="px-6 py-4 text-right text-blue-400">${team.def}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+            } catch (err) {
+                console.error("Data tracking error:", err);
+                document.getElementById('error-box').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

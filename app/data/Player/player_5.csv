@@ -1,4 +1,4 @@
-Player,PPG,Assigned_Team_x,Unnamed: 0,Assigned_Team,Games_Tracked,Season_Off_Possessions,Weighted_ORtg,Season_Def_Possessions,Weighted_DRtg,Net_Efficiency_Rating,Net_Points_Produced,Balanced,Star,Defense,WAR
+Player,Points_Per_Game,Assigned_Team_x,Unnamed: 0,Assigned_Team,Games_Tracked,Season_Off_Possessions,Weighted_ORtg,Season_Def_Possessions,Weighted_DRtg,Net_Efficiency_Rating,Net_Points_Produced,Balanced,Star,Defense,WAR
 Bradyn Hubbard,16.3,Abilene Christian,3915,Abilene Christian Wildcats,29,1424.8,89.6,1382.6,94.9,-5.3,-75.0,-35.5,-75.5,-743.9,-77.7
 Rich Smith,9.9,Abilene Christian,4112,Abilene Christian Wildcats,30,1533.7,89.0,1487.3,95.3,-6.3,-96.2,-52.4,-96.6,-951.5,-98.8
 Yaniel Rivera,7.2,Abilene Christian,3985,Abilene Christian Wildcats,27,1156.3,89.7,1137.0,96.7,-7.1,-81.7,-62.3,-80.9,-802.6,-81.6
@@ -783,17 +783,18 @@ Hampton Sanders,4.2,Columbia,1763,Columbia Lions,26,588.9,97.1,573.2,96.3,0.8,4.
 Richard Nweke,3.0,Columbia,1557,Columbia Lions,17,222.6,98.4,224.9,93.4,5.0,11.2,9.0,11.1,111.9,11.3
 Josiah Cunningham,1.8,Columbia,1893,Columbia Lions,3,20.4,93.3,21.4,84.2,9.0,1.8,1.0,1.9,19.0,2.0
 Leland Coleman,1.3,Columbia,2826,Columbia Lions,8,47.2,67.8,51.0,105.9,-38.2,-18.0,-22.0,-18.0,-186.9,-18.2
-Tarris Reed Jr.,14.7,Connecticut,128,Uconn Huskies,35,1489.9,101.9,1482.0,88.4,13.5,201.0,208.1,201.1,2006.0,200.2
-Alex Karaban,13.2,Connecticut,62,Uconn Huskies,40,2136.1,99.9,2131.5,88.1,11.7,250.9,256.1,252.1,2517.9,251.5
-Braylon Mullins,12.0,Connecticut,240,Uconn Huskies,33,1447.6,99.0,1455.2,88.3,10.7,154.8,148.2,154.9,1553.0,155.8
-Silas Demary Jr.,10.1,Connecticut,117,Uconn Huskies,39,1714.8,100.7,1715.0,88.3,12.4,212.2,212.5,212.6,2126.5,212.7
-Eric Reibe,5.9,Connecticut,901,Uconn Huskies,40,800.9,95.8,823.4,89.4,6.4,51.1,31.1,51.3,519.7,53.6
-Jayden Ross,4.6,Connecticut,216,Uconn Huskies,38,958.7,100.3,982.7,83.1,17.2,165.0,145.0,164.9,1669.5,169.0
-Jaylin Stewart,4.2,Connecticut,454,Uconn Huskies,32,773.3,99.6,798.6,85.9,13.7,105.7,84.2,105.9,1076.6,109.5
-Malachi Smith,3.6,Connecticut,483,Uconn Huskies,40,922.8,97.9,936.7,87.0,10.8,100.1,88.5,100.6,1013.4,102.4
-Dwayne Koroma,1.4,Connecticut,1165,Uconn Huskies,8,106.2,96.1,104.4,66.1,30.0,31.8,33.0,31.9,315.9,31.2
-Alec Millender,0.6,Connecticut,2094,Uconn Huskies,6,26.4,87.2,22.3,94.1,-6.9,-1.8,2.0,-1.8,-16.7,-2.1
-Jacob Furphy,0.4,Connecticut,2196,Uconn Huskies,4,10.4,76.7,10.3,106.5,-29.8,-3.1,-3.0,-3.1,-30.8,-3.1
+Tarris Reed Jr.,14.7,Connecticut,128,Connecticut Huskies,35,1489.9,101.9,1482.0,88.4,13.5,201.0,208.1,201.1,2006.0,200.2
+Alex Karaban,13.2,Connecticut,62,Connecticut Huskies,40,2136.1,99.9,2131.5,88.1,11.7,250.9,256.1,252.1,2517.9,251.5
+Solo Ball,12.8,Connecticut,219,Connecticut Huskies,39,1713.6,99.3,1693.1,89.7,9.6,164.6,182.9,164.5,1635.2,162.4
+Braylon Mullins,12.0,Connecticut,240,Connecticut Huskies,33,1447.6,99.0,1455.2,88.3,10.7,154.8,148.2,154.9,1553.0,155.8
+Silas Demary Jr.,10.1,Connecticut,117,Connecticut Huskies,39,1714.8,100.7,1715.0,88.3,12.4,212.2,212.5,212.6,2126.5,212.7
+Eric Reibe,5.9,Connecticut,901,Connecticut Huskies,40,800.9,95.8,823.4,89.4,6.4,51.1,31.1,51.3,519.7,53.6
+Jayden Ross,4.6,Connecticut,216,Connecticut Huskies,38,958.7,100.3,982.7,83.1,17.2,165.0,145.0,164.9,1669.5,169.0
+Jaylin Stewart,4.2,Connecticut,454,Connecticut Huskies,32,773.3,99.6,798.6,85.9,13.7,105.7,84.2,105.9,1076.6,109.5
+Malachi Smith,3.6,Connecticut,483,Connecticut Huskies,40,922.8,97.9,936.7,87.0,10.8,100.1,88.5,100.6,1013.4,102.4
+Dwayne Koroma,1.4,Connecticut,1165,Connecticut Huskies,8,106.2,96.1,104.4,66.1,30.0,31.8,33.0,31.9,315.9,31.2
+Alec Millender,0.6,Connecticut,2094,Connecticut Huskies,6,26.4,87.2,22.3,94.1,-6.9,-1.8,2.0,-1.8,-16.7,-2.1
+Jacob Furphy,0.4,Connecticut,2196,Connecticut Huskies,4,10.4,76.7,10.3,106.5,-29.8,-3.1,-3.0,-3.1,-30.8,-3.1
 Demariontay Hall,10.6,Coppin State,4347,Coppin State Eagles,21,742.6,82.3,747.5,100.6,-18.3,-136.1,-140.8,-135.9,-1363.4,-135.9
 Khali Horton,7.4,Coppin State,4483,Coppin State Eagles,30,961.5,84.8,952.3,105.3,-20.6,-197.7,-187.4,-197.1,-1961.6,-196.6
 Hussain Williams,7.3,Coppin State,4394,Coppin State Eagles,30,897.4,81.4,889.0,98.5,-17.2,-154.3,-145.2,-153.5,-1527.4,-153.6

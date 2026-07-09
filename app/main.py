@@ -91,10 +91,27 @@ TEAM_HTML_PATH = os.path.join(STATIC_DIR, "team.html")
 # 1. Your Data API Endpoint (The frontend JavaScript calls this)
 @app.get("/api/efficiencies")
 async def get_efficiencies():
-    df = pd.read_csv("app/data/2026/output3.csv")
-    df = df.fillna(0)
-    df = df[df["Possessions"] != 0]
-    return df.to_dict(orient="records")
+    try:
+        # Load your team statistics
+        df = pd.read_csv("app/data/2026/output3.csv")
+        df = df.fillna(0)
+        df = df[df["Possessions"] != 0]
+
+        # Read your newly pre-built schedules lookup map
+        json_path = "app/data/2026/schedules.json"
+        if os.path.exists(json_path):
+            with open(json_path, "r", encoding="utf-8") as f:
+                schedules_data = json.load(f)
+            
+            # Map the clean opponent arrays straight into each row record
+            df['Opponents'] = df['Team'].map(lambda team_name: schedules_data.get(team_name.strip(), []))
+        else:
+            df['Opponents'] = [[] for _ in range(len(df))]
+
+        return df.to_dict(orient="records")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # 2. ROUTE FALLBACK A: If you type http://127.0.0.1:8000/table
 @app.get("/table")
@@ -114,25 +131,39 @@ async def serve_table_with_ext():
 @app.get("/api/team-profile")
 async def get_team_profile(name: str):
     try:
-        # Load the exact same file your efficiencies table uses
+        # 1. Load the CSV file
         df = pd.read_csv("app/data/2026/output3.csv")
         
-        # Search the 'Team' column for the requested name
+        # 2. Search for the requested team
         team_row = df[df["Team"] == name]
         
         if team_row.empty:
             return {"error": "Team not found"}
             
-        # Convert that single matching row into a dictionary to send to JS
-        # .fillna("-") handles any blank CSV cells so JSON doesn't crash
-        team_data = team_row.fillna("-").iloc[0].to_dict()
+        # 3. Convert the row to a raw dictionary
+        raw_data = team_row.iloc[0].to_dict()
+        
+        # 4. Clean and format every column explicitly for the frontend
+        team_data = {}
+        for key, val in raw_data.items():
+            if pd.isna(val):
+                team_data[key] = "-"
+            # Format numeric metrics, but skip text columns like Team and Conference
+            elif isinstance(val, (float, int)) and key not in ["Team", "Conference"]:
+                # If it's a specific whole-number column like Rank, you can keep it as an int:
+                if key.lower() == "rank":
+                    team_data[key] = int(val)
+                else:
+                    team_data[key] = f"{float(val):.2f}"
+            else:
+                team_data[key] = val
         
         return team_data
         
     except Exception as e:
         return {"error": f"Failed to load data: {str(e)}"}
     
-
+    
 @app.get("/api/player-stats")
 async def get_player_stats():
     try:
@@ -161,6 +192,19 @@ async def serve_team_with_ext():
     if os.path.exists(TEAM_HTML_PATH):
         return FileResponse(TEAM_HTML_PATH)
     return {"error": f"Could not find team.html at verified path: {TEAM_HTML_PATH}"}
+
+@app.get("/api/conferences")
+def get_conferences():
+    file_path = "app/data/2026/conferences.json"
+    
+    try:
+        with open(file_path, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=404, 
+            detail="The conference analysis database file was not found on the server."
+        )
 
 # ALWAYS AT BOTTOM
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
