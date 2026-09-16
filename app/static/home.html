@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Basketball Efficiency Ratings</title>
+  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 30px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    .year-nav {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .year-btn {
+      padding: 8px 16px;
+      font-weight: 600;
+      border: 2px solid #007bff;
+      background-color: #fff;
+      color: #007bff;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .year-btn:hover, .year-btn.active {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .table-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    #ratingsTable td {
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+    .stat-cell {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .stat-val {
+      font-weight: 600;
+    }
+    .rank-num {
+      color: #888;
+      font-size: 0.78em;
+      font-weight: 500;
+    }
+    .status-msg {
+      text-align: center;
+      padding: 30px;
+      font-size: 1.1em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>College Basketball Efficiency Ratings</h1>
+
+  <div class="year-nav">
+    <button id="btn-2024" class="year-btn" onclick="loadSeasonData('2024', this)">2024</button>
+    <button id="btn-2025" class="year-btn" onclick="loadSeasonData('2025', this)">2025</button>
+    <button id="btn-2026" class="year-btn active" onclick="loadSeasonData('2026', this)">2026</button>
+  </div>
+
+  <div class="table-container">
+    <table id="ratingsTable" class="display" style="width:100%">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <script>
+    let dataTableInstance = null;
+
+    function loadSeasonData(year, element) {
+      document.querySelectorAll('.year-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) {
+        element.classList.add('active');
+      } else {
+        const targetBtn = document.getElementById(`btn-${year}`);
+        if (targetBtn) targetBtn.classList.add('active');
+      }
+
+      fetch(`/api/ratings/${year}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned HTTP status ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(`Fetched ${year} ratings data:`, data);
+          renderTable(data, year);
+        })
+        .catch(err => {
+          console.error(`Error loading ${year} data:`, err);
+          showTableMessage(`Failed to load ${year} data from server (${err.message}).`);
+        });
+    }
+
+    function showTableMessage(msg) {
+      if (dataTableInstance) {
+        dataTableInstance.destroy();
+        dataTableInstance = null;
+      }
+      $('#ratingsTable').empty().html(`
+        <thead><tr><th>Status</th></tr></thead>
+        <tbody><tr><td class="status-msg">${msg}</td></tr></tbody>
+      `);
+    }
+
+    function renderTable(data, year) {
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        showTableMessage(`No efficiency ratings found in database for ${year}.`);
+        return;
+      }
+
+      const rawKeys = Object.keys(data[0]);
+      const teamKey = rawKeys.find(k => k.toLowerCase().includes('team')) || rawKeys[0];
+      const netKey = rawKeys.find(k => k.toLowerCase().includes('net') && !k.toLowerCase().includes('sos')) || '';
+      const defKey = rawKeys.find(k => k.toLowerCase().includes('def') && !k.toLowerCase().includes('sos')) || '';
+
+      // Filter numeric keys for rank calculation (exclude team, net, conference, season)
+      const numericKeysToRank = rawKeys.filter(key => {
+        const lower = key.toLowerCase();
+        if (key === teamKey || key === netKey || lower === 'conference' || lower === 'season') return false;
+        const val = parseFloat(data[0][key]);
+        return !isNaN(val);
+      });
+
+      // Rank maps calculation
+      const rankMaps = {};
+
+      if (netKey) {
+        const sortedNet = [...data].sort((a, b) => parseFloat(b[netKey]) - parseFloat(a[netKey]));
+        rankMaps[netKey] = new Map();
+        sortedNet.forEach((row, index) => {
+          rankMaps[netKey].set(row[teamKey], index + 1);
+        });
+      }
+
+      numericKeysToRank.forEach(key => {
+      rankMaps[key] = new Map();
+      const keyLower = key.toLowerCase();
+
+      // Determine if lower value means a BETTER rank (Rank 1 = lowest number)
+      let isLowerBetter = false;
+
+      // Defensive SOS, Defensive Efficiency, or any general defensive metric where lower is better
+      if (
+        keyLower.includes('def_sos') || 
+        keyLower.includes('adj_de') || 
+        keyLower.includes('def_eff') || 
+        keyLower.includes('defeff') || 
+        key === defKey
+      ) {
+        isLowerBetter = true;
+      } else if (keyLower.includes('off_sos') || keyLower.includes('offsos')) {
+        isLowerBetter = false; // Higher offensive SOS = tougher schedule = better
+      }
+
+      // Sort array: ascending for lower-is-better, descending for higher-is-better
+      const sorted = [...data].sort((a, b) => {
+        const valA = parseFloat(a[key]);
+        const valB = parseFloat(b[key]);
+        if (isNaN(valA)) return 1;
+        if (isNaN(valB)) return -1;
+        return isLowerBetter ? valA - valB : valB - valA;
+      });
+
+      // Assign ranks (1 to N)
+      sorted.forEach((row, index) => {
+        rankMaps[key].set(row[teamKey], index + 1);
+      });
+    });
+
+      // Construct dynamic columns (EXCLUDING 'season')
+      const columns = [];
+
+      columns.push({
+        title: "Rk",
+        data: null,
+        width: "4%",
+        render: function(data, type, row) {
+          return rankMaps[netKey] ? rankMaps[netKey].get(row[teamKey]) : "";
+        }
+      });
+
+      rawKeys.forEach(key => {
+        if (key.toLowerCase() === 'season') return; // Hide season column completely
+
+        const keyLower = key.toLowerCase();
+        let colWidth = "9%";
+
+        if (keyLower.includes('team')) {
+          colWidth = "20%";
+        } else if (keyLower.includes('conference')) {
+          colWidth = "12%";
+        }
+
+        columns.push({
+          title: key,
+          data: key,
+          width: colWidth,
+          render: function(val, type, row) {
+            if (type === 'sort' || type === 'type') {
+              return !isNaN(val) && val !== "" ? parseFloat(val) : val;
+            }
+
+            if (!isNaN(val) && val !== "") {
+              const formattedVal = parseFloat(val).toFixed(2);
+              
+              if (numericKeysToRank.includes(key)) {
+                const rank = rankMaps[key] ? rankMaps[key].get(row[teamKey]) : null;
+                if (rank) {
+                  return `<div class="stat-cell"><span class="stat-val">${formattedVal}</span><span class="rank-num">${rank}</span></div>`;
+                }
+              }
+              return formattedVal;
+            }
+            return val;
+          }
+        });
+      });
+
+      // Destroy previous DataTable instance
+      if (dataTableInstance) {
+        dataTableInstance.destroy();
+        dataTableInstance = null;
+      }
+
+      // Reset DOM table structure
+      $('#ratingsTable').empty().html('<thead></thead><tbody></tbody>');
+
+      // Initialize DataTable
+      dataTableInstance = $('#ratingsTable').DataTable({
+        data: data,
+        columns: columns,
+        autoWidth: false,
+        paging: false,
+        info: false,
+        searching: true,
+        ordering: true,
+        order: [[0, 'asc']],
+        responsive: true
+      });
+    }
+
+    $(document).ready(function() {
+      const initialBtn = document.getElementById('btn-2026');
+      loadSeasonData('2026', initialBtn);
+    });
+  </script>
+</body>
+</html>

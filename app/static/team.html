@@ -3,248 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrest Analytics | Team Profile</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        body { background-color: silver; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card { background-color: #1e1e1e; border: 1px solid #2d2d2d; border-radius: 8px; }
-        .metric-value { font-size: 2rem; font-weight: bold; color: #0d6efd; }
-        .table-dark { background-color: #1e1e1e; --bs-table-bg: #1e1e1e; }
-    </style>
+    <title>Team Profile | Agrest Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Custom color logic for Net Ratings
+        function getColorClass(val) {
+            if (val > 5) return 'text-emerald-400 font-bold';
+            if (val > 0) return 'text-emerald-300';
+            if (val < -5) return 'text-red-400 font-bold';
+            if (val < 0) return 'text-red-300';
+            return 'text-gray-400';
+        }
+        
+        function formatNet(val) {
+            return val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2);
+        }
+    </script>
 </head>
-<body>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased pb-20">
 
-    <div class="navbar">
-        <img class="logo" src="images/ChatGPT Image Jun 9, 2026, 02_05_22 PM.png" alt="Logo">
-        <a href="table.html">NCAAM</a>
-        <a href="index.html">Simulate</a>
-        <a href="about.html">About</a>
-    </div>
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-wider text-indigo-400">AGREST ANALYTICS</a>
+            <a href="index.html" class="text-sm bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition text-gray-300">← Main Dashboard</a>
+        </div>
+    </nav>
 
-    <div class="container py-5">
-        <div class="mb-4">
-            <a href="table.html" class="btn btn-outline-dark"><i class="fa-solid fa-arrow-left"></i> Back to Table</a>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="app-container" style="display: none;">
+        
+        <!-- Header -->
+        <div class="mb-10 border-b border-gray-700 pb-6">
+            <h1 id="team-title" class="text-5xl font-extrabold tracking-tight text-white mb-2">Team Name</h1>
+            <p class="text-gray-400 text-lg">Advanced Lineup & Efficiency Profile</p>
         </div>
 
-        <div class="card p-5 shadow-sm mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 id="profile-team-name" class="display-4 fw-bold text-white">Loading Team...</h1>
-                    <p id="profile-conference" class="text-muted fs-5 mb-0">Conference Loading...</p>
-                </div>
-                <div class="text-center">
-                    <div class="text-muted uppercase small fw-bold">OVERALL RANK</div>
-                    <div id="profile-rank" class="display-3 fw-bold text-primary">-</div>
+        <!-- Section 3: The Custom Lineup Lab -->
+        <div class="mb-12 bg-gray-800 rounded-xl border border-indigo-500/30 p-6 shadow-lg shadow-indigo-500/10">
+            <h2 class="text-2xl font-bold text-white mb-1">Custom Lineup Lab</h2>
+            <p class="text-gray-400 text-sm mb-6">Select up to 5 players to instantly calculate their shared efficiency metrics.</p>
+            
+            <div id="player-selector" class="flex flex-wrap gap-2 mb-6">
+                <!-- Player buttons injected here -->
+            </div>
+
+            <div id="custom-results" class="bg-gray-900 rounded-lg p-6 border border-gray-700 hidden">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Minutes</p>
+                        <p id="c-min" class="text-xl font-bold text-white">0</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Possessions</p>
+                        <p id="c-poss" class="text-xl font-bold text-white">0</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Offensive Rtg</p>
+                        <p id="c-off" class="text-xl font-bold text-orange-400">0</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Defensive Rtg</p>
+                        <p id="c-def" class="text-xl font-bold text-blue-400">0</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Net Rating</p>
+                        <p id="c-net" class="text-2xl font-black">0</p>
+                    </div>
                 </div>
             </div>
+            <p id="custom-error" class="text-red-400 text-sm hidden mt-4">This combination has not played together.</p>
         </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm text-center">
-                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-gauge-high text-success"></i> Net Rating</h3>
-                    <div class="my-3">
-                        <div class="text-muted small">Adjusted Efficiency</div>
-                        <div id="profile-adj-net" class="metric-value">-</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm text-center">
-                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-gauge-high text-success"></i> Offense</h3>
-                    <div class="my-3">
-                        <div class="text-muted small">Adjusted Efficiency</div>
-                        <div id="profile-adj-off" class="metric-value">-</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm text-center">
-                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shield-halved text-danger"></i> Defense</h3>
-                    <div class="my-3">
-                        <div class="text-muted small">Adjusted Efficiency</div>
-                        <div id="profile-adj-def" class="metric-value">-</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card p-4 shadow-sm text-center">
-                    <h3 class="text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shield-halved text-danger"></i> Possessions</h3>
-                    <div class="my-3">
-                        <div class="text-muted small">Adjusted Efficiency</div>
-                        <div id="profile-adj-poss" class="metric-value">-</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card p-4 shadow-sm">
-            <h2 class="text-white mb-4"><i class="fa-solid fa-users text-primary"></i> Player Value & Efficiency Roster</h2>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
-                    <thead>
+        <!-- Section 1: Roster Matrix -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-4">Individual Player Efficiencies (1-Man)</h2>
+            <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700 text-left text-sm">
+                    <thead class="bg-gray-700/50 text-gray-300 font-semibold uppercase tracking-wider text-xs">
                         <tr>
-                            <th>Player Name</th>
-                            <th>Games</th>
-                            <th>PPG</th>
-                            <th class="text-center">ORtg</th>
-                            <th class="text-center">DRtg</th>
-                            <th class="text-center">Net Rating</th>
+                            <th class="px-6 py-3">Player</th>
+                            <th class="px-4 py-3 text-right">Pos / #</th>
+                            <th class="px-4 py-3 text-right">Mins</th>
+                            <th class="px-4 py-3 text-right">Poss</th>
+                            <th class="px-4 py-3 text-right">Off Rtg</th>
+                            <th class="px-4 py-3 text-right">Def Rtg</th>
+                            <th class="px-4 py-3 text-right">Net Rtg</th>
                         </tr>
                     </thead>
-                    <tbody id="player-table-body">
-                        <tr>
-                            <td colspan="6" class="text-center text-muted">Loading roster data...</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="roster-body" class="divide-y divide-gray-700 text-gray-300"></tbody>
                 </table>
             </div>
         </div>
-    </div>
 
+        <!-- Section 2: Best Lineups -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-4">Top Lineup Combinations (Min 20 Poss)</h2>
+            
+            <!-- Tabs -->
+            <div class="flex space-x-2 border-b border-gray-700 mb-6 pb-2" id="combo-tabs">
+                <button onclick="showLineups(5)" class="px-4 py-2 bg-indigo-600 text-white rounded-md font-bold transition">5-Man</button>
+                <button onclick="showLineups(4)" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition">4-Man</button>
+                <button onclick="showLineups(3)" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition">3-Man</button>
+                <button onclick="showLineups(2)" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition">2-Man</button>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700 text-left text-sm">
+                    <thead class="bg-gray-700/50 text-gray-300 font-semibold uppercase tracking-wider text-xs">
+                        <tr>
+                            <th class="px-6 py-3">Combination</th>
+                            <th class="px-4 py-3 text-right">Mins</th>
+                            <th class="px-4 py-3 text-right">Poss</th>
+                            <th class="px-4 py-3 text-right">Off Rtg</th>
+                            <th class="px-4 py-3 text-right">Def Rtg</th>
+                            <th class="px-4 py-3 text-right">Net Rtg</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lineups-body" class="divide-y divide-gray-700 text-gray-300"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- State & Logic -->
     <script>
-        async function loadTeamProfile() {
+        let currentTeamId = null;
+        let bestLineupsData = null;
+        let selectedPlayers = new Set();
+
+        document.addEventListener("DOMContentLoaded", async () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const teamName = urlParams.get('name'); 
+            const teamName = urlParams.get('name');
 
             if (!teamName) {
-                document.getElementById('profile-team-name').innerText = "No team selected.";
+                document.body.innerHTML = "<h1 class='text-white text-center mt-20 text-2xl'>No team specified in URL.</h1>";
                 return;
             }
 
-            // 1. Fetch main team profile metrics from your API
+            document.getElementById('team-title').textContent = teamName;
+            
             try {
-                const response = await fetch(`/api/team-profile?name=${encodeURIComponent(teamName)}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('profile-team-name').innerText = data.Team;
-                    document.getElementById('profile-conference').innerText = data.Conference || "Division I";
-                    document.getElementById('profile-rank').innerText = `#${data.Overall_Rank || '-'}`;
-                    document.getElementById('profile-adj-net').innerText = data.Net || '-';
-                    document.getElementById('profile-adj-off').innerText = data.Offensive || data.Offense || '-';
-                    document.getElementById('profile-adj-def').innerText = data.Defensive || data.Defense || '-';
-                    document.getElementById('profile-adj-poss').innerText = data.Possessions || '-';
-                }
-            } catch (error) {
-                console.error("Error loading team profile details:", error);
-                document.getElementById('profile-team-name').innerText = "Error loading team data.";
-            }
-
-            // 2. Fetch and filter roster data dynamically from your Express API route
-            try {
-                const playerRes = await fetch('/api/player-stats');
-                if (!playerRes.ok) throw new Error("Could not load player JSON database");
+                // Fetch Master Analytics from Backend
+                const response = await fetch(`/api/team-analytics?name=${encodeURIComponent(teamName)}`);
+                if (!response.ok) throw new Error("Team not found or data missing.");
                 
-                const allPlayers = await playerRes.json();
-                const tbody = document.getElementById('player-table-body');
-                tbody.innerHTML = ''; 
+                const data = await response.json();
+                currentTeamId = data.team_id;
+                
+                // ==========================================
+                // DATA SANITIZATION: Clean Roster & Lineups
+                // ==========================================
+                
+                const seenNames = new Set();
+                const seenIds = new Set();
 
-                const cleanUrlName = (teamName || '').toLowerCase().trim();
-                const schoolPlayers = allPlayers.filter(p => {
-                    const csvTeam = (p.Assigned_Team || '').toLowerCase().trim();
-                    
-                    if (csvTeam === cleanUrlName) return true;
-                    
-                    const csvWords = csvTeam.split(' ');
-                    const urlWords = cleanUrlName.split(' ');
-                    
-                    if (csvWords.includes('state') && !urlWords.includes('state')) return false;
-                    if (csvWords.includes('tech') && !urlWords.includes('tech')) return false;
-                    
-                    if (csvWords.includes('eastern') && !urlWords.includes('eastern')) return false;
-                    if (csvWords.includes('western') && !urlWords.includes('western')) return false;
-                    if (csvWords.includes('southern') && !urlWords.includes('southern')) return false;
-                    if (csvWords.includes('northern') && !urlWords.includes('northern')) return false;
-                    if (csvWords.includes('central') && !urlWords.includes('central')) return false;
-                    if (csvWords.includes('george') && !urlWords.includes('george')) return false;
+                // 1. Clean Roster Data
+                const cleanRoster = (data.roster || []).filter(p => {
+                    const name = p.names && p.names.length > 0 ? p.names[0].trim() : "";
+                    const id = p.ids && p.ids.length > 0 ? p.ids[0] : null;
+                    const nameLower = name.toLowerCase();
 
-                    const matchesAllWords = urlWords.every(word => csvWords.includes(word));
-                    return matchesAllWords;
-                });
-
-                if (schoolPlayers.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No parsed players found for this school.</td></tr>`;
-                    return;
-                }
-
-                // --- NEW ARCHITECTURE: Split based on the 50 possession rule ---
-                const qualifiedPlayers = [];
-                const lowVolumePlayers = [];
-
-                schoolPlayers.forEach(p => {
-                    const totalPossessions = parseFloat(p.Season_Off_Possessions || 0);
-                    if (totalPossessions >= 100) {
-                        qualifiedPlayers.push(p);
-                    } else {
-                        lowVolumePlayers.push(p);
+                    // Filter out unknowns or blank names
+                    if (!name || nameLower === "unknown" || nameLower.includes("unknown player")) {
+                        return false;
                     }
+
+                    // Filter out duplicates by either Name or ID
+                    if (seenNames.has(nameLower) || (id && seenIds.has(id))) {
+                        return false;
+                    }
+
+                    seenNames.add(nameLower);
+                    if (id) seenIds.add(id);
+
+                    return true;
                 });
 
-                // Sort qualified rotation players by Contextual Net Value descending
-                qualifiedPlayers.sort((a, b) => parseFloat(b.Contextual_Net_Value || 0) - parseFloat(a.Contextual_Net_Value || 0));
-                
-                // Sort low volume bench warmers by possession volume descending to keep them structured
-                lowVolumePlayers.sort((a, b) => parseFloat(b.Season_Off_Possessions || 0) - parseFloat(a.Season_Off_Possessions || 0));
-
-                let tableHtml = '';
-
-                // Render primary qualified roster
-                qualifiedPlayers.forEach(p => {
-                    const netVal = parseFloat(p.Contextual_Net_Value || 0);
-                    tableHtml += `
-                        <tr>
-                            <td class="fw-bold text-white">${p.Player || 'Unknown'}</td>
-                            <td class="text-white">${p.Games_Tracked || 0}</td>
-                            <td class="text-white">${p.Points_Per_Game || 0}</td>
-                            <td class="text-center">${p.Weighted_ORtg || 0}</td>
-                            <td class="text-center">${p.Weighted_DRtg || 0}</td>
-                            <td class="text-center fw-semibold ${netVal >= 0 ? 'text-success' : 'text-danger'}">${p.Contextual_Net_Value || '0.0'}</td>
-                        </tr>
-                    `;
-                });
-
-                // Render "Not Enough Data" breakpoint block
-                if (lowVolumePlayers.length > 0) {
-                    tableHtml += `
-                        <tr class="table-dark fw-bold text-uppercase small" style="border-top: 3px double #444; background-color: #141414;">
-                            <td colspan="6" class="py-3 text-center text-muted" style="letter-spacing: 1px; font-size: 0.85rem;">
-                                <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> Not Enough Data (Under 50 Possessions)
-                            </td>
-                        </tr>
-                    `;
-
-                    lowVolumePlayers.forEach(p => {
-                        const netVal = parseFloat(p.Contextual_Net_Value || 0);
-                        tableHtml += `
-                            <tr class="opacity-50 text-muted" style="background-color: rgba(0,0,0,0.15);">
-                                <td>${p.Player || 'Unknown'}</td>
-                                <td>${p.Games_Tracked || 0}</td>
-                                <td>${p.Points_Per_Game || 0}</td>
-                                <td class="text-center">${p.Weighted_ORtg || 0}</td>
-                                <td class="text-center">${p.Weighted_DRtg || 0}</td>
-                                <td class="text-center fw-semibold ${netVal >= 0 ? 'text-success' : 'text-danger'}">${p.Contextual_Net_Value || '0.0'}</td>
-                            </tr>
-                        `;
+                // 2. Clean Lineups Data
+                bestLineupsData = data.best_lineups || {};
+                for (const size in bestLineupsData) {
+                    bestLineupsData[size] = bestLineupsData[size].filter(combo => {
+                        // Filter out any combination that includes an "unknown" player
+                        return !combo.names.some(name => {
+                            const n = name ? name.toLowerCase().trim() : "";
+                            return n === "unknown" || n.includes("unknown player");
+                        });
                     });
                 }
-
-                tbody.innerHTML = tableHtml;
+                
+                // ==========================================
+                
+                // Build UI using the cleaned roster data
+                buildRosterTable(cleanRoster);
+                buildCustomSelector(cleanRoster);
+                showLineups(5); // Default to showing 5-Man
+                
+                document.getElementById('app-container').style.display = 'block';
 
             } catch (err) {
-                console.error("Error loading roster:", err);
-                document.getElementById('player-table-body').innerHTML = 
-                    `<tr><td colspan="6" class="text-center text-danger">Error fetching player roster database.</td></tr>`;
+                console.error(err);
+                document.body.innerHTML = `<h1 class='text-red-400 text-center mt-20 text-2xl'>${err.message}</h1>`;
             }
+        });
+
+        // --- Roster Table ---
+        function buildRosterTable(roster) {
+            const tbody = document.getElementById('roster-body');
+            roster.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-700/30";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-bold text-white">${p.names[0]}</td>
+                    <td class="px-4 py-4 text-right text-gray-400">${p.position || '-'} | #${p.jersey || '-'}</td>
+                    <td class="px-4 py-4 text-right">${p.minutes}</td>
+                    <td class="px-4 py-4 text-right">${p.possessions}</td>
+                    <td class="px-4 py-4 text-right text-orange-400">${p.off_eff.toFixed(2)}</td>
+                    <td class="px-4 py-4 text-right text-blue-400">${p.def_eff.toFixed(2)}</td>
+                    <td class="px-4 py-4 text-right text-lg ${getColorClass(p.net_eff)}">${formatNet(p.net_eff)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        window.onload = loadTeamProfile;
+        // --- Best Lineups Table ---
+        function showLineups(size) {
+            // Update Tab Styling
+            const buttons = document.getElementById('combo-tabs').children;
+            for(let btn of buttons) {
+                if(btn.textContent.includes(size)) {
+                    btn.className = "px-4 py-2 bg-indigo-600 text-white rounded-md font-bold transition";
+                } else {
+                    btn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition";
+                }
+            }
+
+            const tbody = document.getElementById('lineups-body');
+            tbody.innerHTML = '';
+            
+            const combos = bestLineupsData[size];
+            if(!combos || combos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">Not enough data. (Minimum 20 possessions required)</td></tr>`;
+                return;
+            }
+
+            combos.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-700/30";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-200">${c.names.join(' <span class="text-gray-600 mx-1">+</span> ')}</td>
+                    <td class="px-4 py-4 text-right">${c.minutes}</td>
+                    <td class="px-4 py-4 text-right">${c.possessions}</td>
+                    <td class="px-4 py-4 text-right text-orange-400">${c.off_eff.toFixed(2)}</td>
+                    <td class="px-4 py-4 text-right text-blue-400">${c.def_eff.toFixed(2)}</td>
+                    <td class="px-4 py-4 text-right text-lg ${getColorClass(c.net_eff)}">${formatNet(c.net_eff)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Custom Lineup Lab ---
+        function buildCustomSelector(roster) {
+            const container = document.getElementById('player-selector');
+            roster.forEach(p => {
+                const btn = document.createElement('button');
+                btn.textContent = p.names[0];
+                btn.className = "px-3 py-1.5 bg-gray-800 border border-gray-600 text-gray-300 rounded-full text-sm hover:border-gray-400 transition";
+                btn.onclick = () => togglePlayer(p.ids[0], btn);
+                container.appendChild(btn);
+            });
+        }
+
+        async function togglePlayer(id, btnElement) {
+            if (selectedPlayers.has(id)) {
+                selectedPlayers.delete(id);
+                btnElement.classList.replace('bg-indigo-600', 'bg-gray-800');
+                btnElement.classList.replace('border-indigo-400', 'border-gray-600');
+                btnElement.classList.replace('text-white', 'text-gray-300');
+            } else {
+                if (selectedPlayers.size >= 5) {
+                    alert("You can only select up to 5 players for a lineup.");
+                    return;
+                }
+                selectedPlayers.add(id);
+                btnElement.classList.replace('bg-gray-800', 'bg-indigo-600');
+                btnElement.classList.replace('border-gray-600', 'border-indigo-400');
+                btnElement.classList.replace('text-gray-300', 'text-white');
+            }
+
+            if (selectedPlayers.size === 0) {
+                document.getElementById('custom-results').classList.add('hidden');
+                document.getElementById('custom-error').classList.add('hidden');
+                return;
+            }
+
+            // Hit the API to get custom combination stats
+            const pids = Array.from(selectedPlayers).join(',');
+            const res = await fetch(`/api/custom-lineup?team_id=${currentTeamId}&pids=${pids}`);
+            const data = await res.json();
+
+            if (data.error) {
+                document.getElementById('custom-results').classList.add('hidden');
+                document.getElementById('custom-error').textContent = data.error;
+                document.getElementById('custom-error').classList.remove('hidden');
+            } else {
+                document.getElementById('custom-error').classList.add('hidden');
+                document.getElementById('custom-results').classList.remove('hidden');
+                
+                document.getElementById('c-min').textContent = data.minutes;
+                document.getElementById('c-poss').textContent = data.possessions;
+                document.getElementById('c-off').textContent = data.off_eff.toFixed(2);
+                document.getElementById('c-def').textContent = data.def_eff.toFixed(2);
+                
+                const netEl = document.getElementById('c-net');
+                netEl.textContent = formatNet(data.net_eff);
+                netEl.className = `text-2xl font-black ${getColorClass(data.net_eff)}`;
+            }
+        }
     </script>
 </body>
 </html>

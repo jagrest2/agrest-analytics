@@ -10,6 +10,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import json
 from fastapi import HTTPException
+import sqlite3
+from itertools import combinations
 
 
 # Note: Make sure your "model.py" file is renamed to "simulation.py" 
@@ -205,6 +207,206 @@ def get_conferences():
             status_code=404, 
             detail="The conference analysis database file was not found on the server."
         )
+    
+@app.get("/api/team-analytics")
+def get_team_analytics(name: str):
+    """Fetches full roster efficiencies and the best lineup combinations for a specific team."""
+    db_path = "agrest_analytics.db"
+    if not os.path.exists(db_path):
+        raise HTTPException(status_code=500, detail="Database not found.")
+        
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # 1. Lookup Team ID based on the display name
+    cursor.execute("""
+        SELECT team_id
+        FROM teams
+        WHERE display_name = ?
+        OR display_name LIKE ? || ' %'
+        COLLATE NOCASE
+        """, (name, name))
+    team_row = cursor.fetchone()
+    if not team_row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Team not found in master database.")
+    team_id = team_row["team_id"]
+
+    # 2. Get the Master Roster for this team to map IDs to Names
+    cursor.execute("SELECT player_id, full_name, jersey, position FROM players WHERE team_id = ?", (team_id,))
+    players_dict = {str(row["player_id"]): dict(row) for row in cursor.fetchall()}
+
+    # 3. Load all stints for this team
+    cursor.execute("""
+        SELECT p1, p2, p3, p4, p5, possessions, points_for, points_against, seconds_played 
+        FROM lineup_stints WHERE team_id = ?
+    """, (team_id,))
+    stints = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    # 4. In-Memory Combinatorics Engine
+    combo_stats = {}
+    
+    for stint in stints:
+        # Extract active players, ignoring empty slots or UNKNOWN errors
+        lineup = [str(stint[f"p{i}"]) for i in range(1, 6) if stint[f"p{i}"] and stint[f"p{i}"] != "UNKNOWN"]
+        poss = stint["possessions"]
+        
+        if poss == 0 and stint["seconds_played"] == 0:
+            continue
+            
+        # Explode this stint into 1-man, 2-man, 3-man, 4-man, and 5-man sub-combinations
+        for r in range(1, len(lineup) + 1):
+            for combo in combinations(lineup, r):
+                combo_key = tuple(sorted(combo))
+                if combo_key not in combo_stats:
+                    combo_stats[combo_key] = {"poss": 0.0, "pf": 0, "pa": 0, "secs": 0}
+                
+                combo_stats[combo_key]["poss"] += poss
+                combo_stats[combo_key]["pf"] += stint["points_for"]
+                combo_stats[combo_key]["pa"] += stint["points_against"]
+                combo_stats[combo_key]["secs"] += stint["seconds_played"]
+
+    # 5. Format the data for the Frontend
+    roster_stats = []
+    best_lineups = {2: [], 3: [], 4: [], 5: []}
+
+    for combo_key, stats in combo_stats.items():
+        poss = stats["poss"]
+        if poss == 0:
+            continue
+
+        off_eff = (stats["pf"] / poss) * 100.0
+        def_eff = (stats["pa"] / poss) * 100.0
+        net_eff = off_eff - def_eff
+        
+        names = [players_dict.get(pid, {}).get("full_name", f"Unknown ({pid})") for pid in combo_key]
+        
+        record = {
+            "ids": list(combo_key),
+            "names": names,
+            "possessions": round(poss, 1),
+            "minutes": round(stats["secs"] / 60.0, 1),
+            "off_eff": round(off_eff, 2),
+            "def_eff": round(def_eff, 2),
+            "net_eff": round(net_eff, 2)
+        }
+
+        size = len(combo_key)
+        if size == 1:
+            pid = combo_key[0]
+            record["jersey"] = players_dict.get(pid, {}).get("jersey", "-")
+            record["position"] = players_dict.get(pid, {}).get("position", "-")
+            # Only include players who actually played
+            if record["minutes"] > 0:
+                roster_stats.append(record)
+        elif size in best_lineups and poss >= 20: # Must have at least 20 possessions together!
+            best_lineups[size].append(record)
+
+    # Sort Roster by Minutes Played
+    roster_stats.sort(key=lambda x: x["minutes"], reverse=True)
+    
+    # Sort Lineups by Net Efficiency and keep the Top 10
+    for size in best_lineups:
+        best_lineups[size].sort(key=lambda x: x["net_eff"], reverse=True)
+        best_lineups[size] = best_lineups[size][:10]
+
+    return {
+        "team_id": team_id,
+        "team_name": name,
+        "roster": roster_stats,
+        "best_lineups": best_lineups
+    }
+
+@app.get("/api/custom-lineup")
+def calculate_custom_lineup(team_id: int, pids: str):
+    """Calculates efficiency for a specific user-selected combination of players."""
+    conn = sqlite3.connect("agrest_analytics.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # The user sends comma-separated player IDs (e.g., "4431678,4500123")
+    selected_set = set(pids.split(","))
+
+    cursor.execute("""
+        SELECT p1, p2, p3, p4, p5, possessions, points_for, points_against, seconds_played 
+        FROM lineup_stints WHERE team_id = ?
+    """, (team_id,))
+    
+    total_poss = 0.0
+    total_pf = 0
+    total_pa = 0
+    total_secs = 0
+
+    for row in cursor.fetchall():
+        lineup = {str(row["p1"]), str(row["p2"]), str(row["p3"]), str(row["p4"]), str(row["p5"])}
+        
+        # Core Logic: If the selected players are a subset of the 5 guys on the floor, count the stats!
+        if selected_set.issubset(lineup):
+            total_poss += row["possessions"]
+            total_pf += row["points_for"]
+            total_pa += row["points_against"]
+            total_secs += row["seconds_played"]
+            
+    conn.close()
+
+    if total_poss == 0:
+        return {"error": "This combination has not logged a single possession together."}
+
+    off_eff = (total_pf / total_poss) * 100.0
+    def_eff = (total_pa / total_poss) * 100.0
+    net_eff = off_eff - def_eff
+
+    return {
+        "possessions": round(total_poss, 1),
+        "minutes": round(total_secs / 60.0, 1),
+        "off_eff": round(off_eff, 2),
+        "def_eff": round(def_eff, 2),
+        "net_eff": round(net_eff, 2)
+    }
+
+
+# Enable CORS so your frontend can communicate with FastAPI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/api/ratings/{season}")
+async def get_ratings(season: int):
+    try:
+        conn = sqlite3.connect("app/ratings.db")
+        cursor = conn.cursor()
+
+        # Check against both string and int representation to catch SQLite type mismatches
+        cursor.execute(
+            "SELECT * FROM efficiency_ratings WHERE season = ? OR season = ?", 
+            (str(season), season)
+        )
+        
+        # Check if query returned columns/rows
+        if not cursor.description:
+            conn.close()
+            return []
+
+        columns = [description[0] for description in cursor.description]
+        rows = cursor.fetchall()
+        conn.close()
+
+        if not rows:
+            return []
+
+        # Convert SQLite rows to a list of dicts
+        data = [dict(zip(columns, row)) for row in rows]
+        return data
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ALWAYS AT BOTTOM
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
